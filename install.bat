@@ -12,94 +12,147 @@ echo.
 set "INSTALL_DIR=%~dp0"
 set "INSTALL_DIR=%INSTALL_DIR:~0,-1%"
 
-:: Check if Python is installed
+:: ============================================
+:: CHECK PYTHON
+:: ============================================
+echo [1/6] Checking Python...
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] Python is not installed!
-    echo Please install Python from https://python.org
+    echo.
+    echo  [ERROR] Python is not installed!
+    echo.
+    echo  Please install Python from: https://python.org
+    echo  Make sure to check "Add Python to PATH" during installation
+    echo.
     pause
     exit /b 1
 )
-echo [OK] Python found
+echo       [OK] Python found
 
-:: Check if Ollama is installed
+:: ============================================
+:: CHECK/INSTALL OLLAMA
+:: ============================================
+echo [2/6] Checking Ollama...
 ollama --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] Ollama is not installed!
-    echo Please install Ollama from https://ollama.ai
-    pause
-    exit /b 1
+    echo.
+    echo       Ollama not found. Downloading Ollama...
+    echo.
+    
+    :: Download Ollama installer
+    powershell -Command "Invoke-WebRequest -Uri 'https://ollama.com/download/OllamaSetup.exe' -OutFile '%TEMP%\OllamaSetup.exe'"
+    
+    if exist "%TEMP%\OllamaSetup.exe" (
+        echo       Installing Ollama...
+        start /wait "" "%TEMP%\OllamaSetup.exe"
+        del "%TEMP%\OllamaSetup.exe"
+        
+        :: Wait for Ollama to be available
+        timeout /t 5 /nobreak >nul
+        
+        ollama --version >nul 2>&1
+        if %errorlevel% neq 0 (
+            echo.
+            echo  [ERROR] Ollama installation failed!
+            echo  Please install manually from: https://ollama.ai
+            echo.
+            pause
+            exit /b 1
+        )
+        echo       [OK] Ollama installed successfully
+    ) else (
+        echo.
+        echo  [ERROR] Failed to download Ollama!
+        echo  Please install manually from: https://ollama.ai
+        echo.
+        pause
+        exit /b 1
+    )
+) else (
+    echo       [OK] Ollama found
 )
-echo [OK] Ollama found
 
-:: Create virtual environment
-echo.
-echo [SETUP] Creating virtual environment...
+:: ============================================
+:: START OLLAMA SERVICE
+:: ============================================
+echo [3/6] Starting Ollama service...
+:: Check if Ollama is running
+tasklist /FI "IMAGENAME eq ollama.exe" 2>NUL | find /I /N "ollama.exe">NUL
+if %errorlevel% neq 0 (
+    start "" ollama serve
+    timeout /t 3 /nobreak >nul
+)
+echo       [OK] Ollama service running
+
+:: ============================================
+:: CREATE VIRTUAL ENVIRONMENT
+:: ============================================
+echo [4/6] Setting up Python environment...
 if not exist "%INSTALL_DIR%\venv" (
     python -m venv "%INSTALL_DIR%\venv"
 )
-echo [OK] Virtual environment ready
+echo       [OK] Virtual environment ready
 
 :: Install dependencies
-echo.
-echo [SETUP] Installing dependencies...
+echo       Installing dependencies...
 call "%INSTALL_DIR%\venv\Scripts\pip" install -r "%INSTALL_DIR%\requirements.txt" -q
-echo [OK] Dependencies installed
+echo       [OK] Dependencies installed
 
-:: Pull Ollama model
-echo.
-echo [SETUP] Pulling AI model (glm-4.7:cloud)...
-echo         This may take a few minutes...
+:: ============================================
+:: PULL AI MODEL
+:: ============================================
+echo [5/6] Downloading AI model (glm-4.7:cloud)...
+echo       This may take a few minutes on first run...
 ollama pull glm-4.7:cloud
-echo [OK] Model ready
+echo       [OK] Model ready
 
-:: Create PowerShell profile with abid function
-echo.
-echo [SETUP] Adding 'abid' command to PowerShell...
+:: ============================================
+:: SETUP ABID COMMAND
+:: ============================================
+echo [6/6] Setting up 'abid' command...
 
 :: Create PowerShell script to add to profile
 set "PS_SCRIPT=%TEMP%\add_abid.ps1"
+
 echo $profileDir = Split-Path $PROFILE > "%PS_SCRIPT%"
-echo if (!(Test-Path $profileDir)) { New-Item -Path $profileDir -ItemType Directory -Force } >> "%PS_SCRIPT%"
-echo if (!(Test-Path $PROFILE)) { New-Item -Path $PROFILE -ItemType File -Force } >> "%PS_SCRIPT%"
+echo if (!(Test-Path $profileDir)) { New-Item -Path $profileDir -ItemType Directory -Force ^| Out-Null } >> "%PS_SCRIPT%"
+echo if (!(Test-Path $PROFILE)) { New-Item -Path $PROFILE -ItemType File -Force ^| Out-Null } >> "%PS_SCRIPT%"
 echo $content = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue >> "%PS_SCRIPT%"
 echo if ($content -notmatch 'function abid') { >> "%PS_SCRIPT%"
-echo     $abidFunc = @" >> "%PS_SCRIPT%"
+echo     $abidFunc = @' >> "%PS_SCRIPT%"
 echo. >> "%PS_SCRIPT%"
 echo # ABID - AI Coding Assistant >> "%PS_SCRIPT%"
 echo function abid { >> "%PS_SCRIPT%"
-echo     `$env:API_KEY = "ollama" >> "%PS_SCRIPT%"
-echo     `$env:BASE_URL = "http://localhost:11434/v1" >> "%PS_SCRIPT%"
-echo     ^& "%INSTALL_DIR%\venv\Scripts\python.exe" "%INSTALL_DIR%\main.py" `$args >> "%PS_SCRIPT%"
+echo     $env:API_KEY = "ollama" >> "%PS_SCRIPT%"
+echo     $env:BASE_URL = "http://localhost:11434/v1" >> "%PS_SCRIPT%"
+echo     ^& "%INSTALL_DIR%\venv\Scripts\python.exe" "%INSTALL_DIR%\main.py" $args >> "%PS_SCRIPT%"
 echo } >> "%PS_SCRIPT%"
-echo "@ >> "%PS_SCRIPT%"
+echo '@ >> "%PS_SCRIPT%"
 echo     Add-Content -Path $PROFILE -Value $abidFunc >> "%PS_SCRIPT%"
-echo     Write-Host '[OK] abid command added to PowerShell profile' >> "%PS_SCRIPT%"
-echo } else { >> "%PS_SCRIPT%"
-echo     Write-Host '[OK] abid command already exists in profile' >> "%PS_SCRIPT%"
 echo } >> "%PS_SCRIPT%"
 
-powershell -ExecutionPolicy Bypass -File "%PS_SCRIPT%"
-del "%PS_SCRIPT%"
+powershell -ExecutionPolicy Bypass -File "%PS_SCRIPT%" >nul 2>&1
+del "%PS_SCRIPT%" >nul 2>&1
 
+echo       [OK] 'abid' command configured
+
+:: ============================================
+:: INSTALLATION COMPLETE - START ABID
+:: ============================================
 echo.
 echo  ╔═══════════════════════════════════════════╗
 echo  ║     Installation Complete!                ║
 echo  ╚═══════════════════════════════════════════╝
 echo.
+echo  Starting ABID AI Assistant...
+echo.
 echo  ┌─────────────────────────────────────────────┐
-echo  │  IMPORTANT: Close this terminal and        │
-echo  │  open a NEW PowerShell window to use       │
-echo  │  the 'abid' command.                       │
+echo  │  TIP: After this session, open a NEW       │
+echo  │  terminal and type 'abid' anywhere!        │
 echo  └─────────────────────────────────────────────┘
 echo.
-echo  Usage Examples:
-echo.
-echo    abid                          - Start interactive mode
-echo    abid "list all files"         - Run with prompt
-echo    abid "add login feature"      - Add features to project
-echo    abid "fix the bug in app.js"  - Fix bugs
-echo.
-echo  Just type 'abid' in any folder to start!
-echo.
-pause
+
+:: Set environment and start ABID
+set API_KEY=ollama
+set BASE_URL=http://localhost:11434/v1
+"%INSTALL_DIR%\venv\Scripts\python.exe" "%INSTALL_DIR%\main.py"
