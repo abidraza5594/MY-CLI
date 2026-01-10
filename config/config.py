@@ -51,16 +51,11 @@ PROVIDER_CONFIG = {
         "vision_model": "pixtral-large-latest",
         "env_key": "MISTRAL_API_KEY",
         "models": [
-            # Use "-latest" suffix for most models - it auto-resolves to current version
-            {"name": "codestral-latest", "desc": "Best for Coding ⭐", "type": "coding"},
-            {"name": "mistral-small-latest", "desc": "Fast & Efficient", "type": "coding"},
+            # Working models with standard API
+            {"name": "mistral-small-latest", "desc": "Fast & Good for Code ⭐", "type": "coding"},
             {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
-            {"name": "mistral-medium-latest", "desc": "Good Balance", "type": "general"},
             {"name": "open-mistral-nemo", "desc": "Open Source 12B", "type": "general"},
-            {"name": "ministral-8b-latest", "desc": "Mini 8B Fast", "type": "general"},
-            {"name": "ministral-3b-latest", "desc": "Mini 3B Fastest", "type": "general"},
-            {"name": "pixtral-large-latest", "desc": "Best Vision ⭐", "type": "vision"},
-            {"name": "pixtral-12b-latest", "desc": "Vision 12B", "type": "vision"},
+            {"name": "pixtral-large-latest", "desc": "Vision Model ⭐", "type": "vision"},
         ],
     },
     Provider.OPENAI: {
