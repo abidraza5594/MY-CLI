@@ -12,61 +12,80 @@ A powerful terminal-based AI coding assistant that helps you with coding tasks.
  Your AI Coding Partner
 ```
 
-## ⚡ Quick Install (Windows)
+## ⚡ One-Click Install (Windows)
 
 ### Prerequisites
 1. Install [Python](https://python.org) (3.10+)
 2. Install [Ollama](https://ollama.ai)
 
 ### Installation
+
 ```bash
+# 1. Clone the repo
 git clone https://github.com/abidraza5594/MY-CLI.git
 cd MY-CLI
+
+# 2. Run installer (does everything automatically!)
 install.bat
 ```
 
-That's it! The installer will:
-- ✅ Create virtual environment
-- ✅ Install all dependencies
-- ✅ Download AI model (glm-4.7:cloud)
-- ✅ Add `abid` command to your system
+**That's it!** The installer automatically:
+- ✅ Creates virtual environment
+- ✅ Installs all dependencies  
+- ✅ Downloads AI model (glm-4.7:cloud)
+- ✅ Adds `abid` command to your system
+
+### After Installation
+
+1. **Close the terminal**
+2. **Open a NEW PowerShell window**
+3. **Type `abid` anywhere!**
+
+```bash
+# Go to any project
+cd "D:\your-project"
+
+# Start coding with AI
+abid
+```
 
 ## 🚀 Usage
-
-Open a **new terminal** and use anywhere:
 
 ```bash
 # Interactive mode
 abid
 
 # With prompt
-abid "list all files in current directory"
+abid "list all files"
 
-# In any project
-cd "D:\your-project"
+# In any project folder
+cd "C:\Projects\my-app"
 abid "add dark mode to this React app"
+abid "fix the login bug"
+abid "create a REST API for users"
 ```
 
 ## 💡 Example Prompts
 
-| Task | Prompt |
-|------|--------|
-| Explore Project | `abid "show me the project structure"` |
+| Task | Command |
+|------|---------|
+| Explore | `abid "show me the project structure"` |
 | Add Feature | `abid "add a search bar to the header"` |
-| Fix Bug | `abid "fix the login authentication issue"` |
-| Refactor | `abid "refactor this code to use async/await"` |
-| Create API | `abid "create REST API for user management"` |
+| Fix Bug | `abid "fix the authentication issue"` |
+| Refactor | `abid "refactor to use async/await"` |
+| Create API | `abid "create REST API for products"` |
+| Add Tests | `abid "add unit tests for utils"` |
 
 ## 🛠️ Features
 
 - 🔍 **Smart Code Analysis** - Understands your entire codebase
-- ✏️ **Auto Edit** - Makes changes in correct files
-- 🔎 **Code Search** - Finds relevant code quickly
-- 💻 **Shell Commands** - Runs build, test commands
+- ✏️ **Auto Edit** - Makes changes in correct files automatically
+- 🔎 **Code Search** - Finds relevant code with grep/glob
+- 💻 **Shell Commands** - Runs build, test, lint commands
 - 🌐 **Web Search** - Searches for solutions online
 - 💾 **Session Save** - Save and resume conversations
 
-## ⌨️ Commands (Interactive Mode)
+## ⌨️ Interactive Commands
 
 | Command | Description |
 |---------|-------------|
@@ -83,13 +102,13 @@ abid "add dark mode to this React app"
 If `install.bat` doesn't work:
 
 ```bash
-# 1. Clone repo
+# 1. Clone
 git clone https://github.com/abidraza5594/MY-CLI.git
 cd MY-CLI
 
 # 2. Create venv
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\activate
 
 # 3. Install packages
 pip install -r requirements.txt
@@ -97,9 +116,9 @@ pip install -r requirements.txt
 # 4. Pull model
 ollama pull glm-4.7:cloud
 
-# 5. Run
-set API_KEY=ollama
-set BASE_URL=http://localhost:11434/v1
+# 5. Run manually
+$env:API_KEY="ollama"
+$env:BASE_URL="http://localhost:11434/v1"
 python main.py
 ```
 
@@ -114,17 +133,13 @@ MY-CLI/
 ├── agent/            # AI agent logic
 ├── client/           # LLM client
 ├── tools/            # Built-in tools
-│   └── builtin/      # File, shell, search tools
 ├── config/           # Configuration
-├── context/          # Context management
-├── prompts/          # System prompts
-├── safety/           # Safety checks
 └── ui/               # Terminal UI
 ```
 
 ## 🤝 Contributing
 
-Pull requests welcome! 
+Pull requests welcome!
 
 ## 📄 License
 
