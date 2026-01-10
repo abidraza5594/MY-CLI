@@ -34,28 +34,30 @@ PROVIDER_CONFIG = {
         ],
     },
     Provider.GEMINI: {
-        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
         "default_model": "gemini-2.0-flash",
         "vision_model": "gemini-2.0-flash",
         "env_key": "GEMINI_API_KEY",
         "models": [
             {"name": "gemini-2.0-flash", "desc": "Best & Fast ⭐", "type": "coding"},
-            {"name": "gemini-1.5-flash-latest", "desc": "Fast, Good for Code", "type": "coding"},
-            {"name": "gemini-1.5-pro-latest", "desc": "Most Capable", "type": "general"},
-            {"name": "gemini-2.0-flash", "desc": "Vision Support", "type": "vision"},
+            {"name": "gemini-1.5-flash", "desc": "Fast, Good for Code", "type": "coding"},
+            {"name": "gemini-1.5-pro", "desc": "Most Capable", "type": "general"},
         ],
     },
     Provider.MISTRAL: {
         "base_url": "https://api.mistral.ai/v1",
-        "default_model": "mistral-small-latest",
-        "vision_model": "pixtral-large-latest",
+        "default_model": "open-mistral-nemo",
+        "vision_model": "pixtral-12b-2409",
         "env_key": "MISTRAL_API_KEY",
         "models": [
-            # Working models with standard API
-            {"name": "mistral-small-latest", "desc": "Fast & Good for Code ⭐", "type": "coding"},
-            {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
-            {"name": "open-mistral-nemo", "desc": "Open Source 12B", "type": "general"},
-            {"name": "pixtral-large-latest", "desc": "Vision Model ⭐", "type": "vision"},
+            # Free/Open models that work without special access
+            {"name": "open-mistral-nemo", "desc": "Free Open Source ⭐", "type": "coding"},
+            {"name": "open-mistral-7b", "desc": "Free 7B Model", "type": "general"},
+            {"name": "open-mixtral-8x7b", "desc": "Free Mixtral", "type": "general"},
+            # Paid models (need subscription)
+            {"name": "mistral-small-latest", "desc": "Paid - Fast", "type": "coding"},
+            {"name": "mistral-large-latest", "desc": "Paid - Powerful", "type": "general"},
+            {"name": "pixtral-12b-2409", "desc": "Vision Model", "type": "vision"},
         ],
     },
     Provider.OPENAI: {
