@@ -13,12 +13,14 @@ from client.response import (
     ToolCallDelta,
     parse_tool_call_arguments,
 )
-from config.config import Config
+from config.config import Config, Provider
 
 
 class LLMClient:
     def __init__(self, config: Config) -> None:
         self._client: AsyncOpenAI | None = None
+        self._mistral_client = None
+        self._gemini_model = None
         self._max_retries: int = 3
         self.config = config
 
@@ -29,6 +31,27 @@ class LLMClient:
                 base_url=self.config.base_url,
             )
         return self._client
+
+    def get_mistral_client(self):
+        """Get Mistral client using official SDK"""
+        if self._mistral_client is None:
+            try:
+                from mistralai import Mistral
+                self._mistral_client = Mistral(api_key=self.config.api_key)
+            except ImportError:
+                raise ImportError("Please install mistralai: pip install mistralai")
+        return self._mistral_client
+
+    def get_gemini_model(self):
+        """Get Gemini model using official SDK"""
+        if self._gemini_model is None:
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self.config.api_key)
+                self._gemini_model = genai.GenerativeModel(self.config.model_name)
+            except ImportError:
+                raise ImportError("Please install google-generativeai: pip install google-generativeai")
+        return self._gemini_model
 
     async def close(self) -> None:
         if self._client:
@@ -88,6 +111,158 @@ class LLMClient:
         stream: bool = True,
         image_path: str | None = None,
     ) -> AsyncGenerator[StreamEvent, None]:
+        # Route to appropriate provider
+        provider = self.config.provider
+        
+        if provider == Provider.MISTRAL:
+            async for event in self._mistral_chat(messages, tools, image_path):
+                yield event
+            return
+        elif provider == Provider.GEMINI:
+            async for event in self._gemini_chat(messages, tools, image_path):
+                yield event
+            return
+        
+        # Default: Use OpenAI-compatible client (Ollama, OpenAI, Groq)
+        async for event in self._openai_chat(messages, tools, stream, image_path):
+            yield event
+
+    async def _mistral_chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        image_path: str | None = None,
+    ) -> AsyncGenerator[StreamEvent, None]:
+        """Chat using Mistral's native SDK"""
+        try:
+            client = self.get_mistral_client()
+            model = self.config.model_name
+            
+            # Convert messages to Mistral format
+            mistral_messages = []
+            for msg in messages:
+                role = msg.get("role", "user")
+                content = msg.get("content", "")
+                if isinstance(content, list):
+                    # Extract text from multimodal content
+                    content = " ".join(
+                        item.get("text", "") for item in content 
+                        if isinstance(item, dict) and item.get("type") == "text"
+                    )
+                mistral_messages.append({"role": role, "content": content})
+            
+            # Call Mistral API
+            response = client.chat.complete(
+                model=model,
+                messages=mistral_messages,
+            )
+            
+            if response and response.choices:
+                content = response.choices[0].message.content
+                
+                # Yield text delta
+                yield StreamEvent(
+                    type=StreamEventType.TEXT_DELTA,
+                    text_delta=TextDelta(content),
+                )
+                
+                # Yield completion
+                yield StreamEvent(
+                    type=StreamEventType.MESSAGE_COMPLETE,
+                    finish_reason="stop",
+                    usage=TokenUsage(
+                        prompt_tokens=response.usage.prompt_tokens if response.usage else 0,
+                        completion_tokens=response.usage.completion_tokens if response.usage else 0,
+                        total_tokens=response.usage.total_tokens if response.usage else 0,
+                        cached_tokens=0,
+                    ) if response.usage else None,
+                )
+            else:
+                yield StreamEvent(
+                    type=StreamEventType.ERROR,
+                    error="No response from Mistral API",
+                )
+                
+        except Exception as e:
+            yield StreamEvent(
+                type=StreamEventType.ERROR,
+                error=f"Mistral API error: {e}",
+            )
+
+    async def _gemini_chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        image_path: str | None = None,
+    ) -> AsyncGenerator[StreamEvent, None]:
+        """Chat using Google's Gemini SDK"""
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=self.config.api_key)
+            
+            model = genai.GenerativeModel(self.config.model_name)
+            
+            # Convert messages to Gemini format (just get the last user message for simple chat)
+            # Gemini uses a different conversation format
+            chat_history = []
+            last_user_msg = ""
+            
+            for msg in messages:
+                role = msg.get("role", "user")
+                content = msg.get("content", "")
+                
+                if isinstance(content, list):
+                    content = " ".join(
+                        item.get("text", "") for item in content 
+                        if isinstance(item, dict) and item.get("type") == "text"
+                    )
+                
+                if role == "user":
+                    last_user_msg = content
+                    chat_history.append({"role": "user", "parts": [content]})
+                elif role == "assistant":
+                    chat_history.append({"role": "model", "parts": [content]})
+                # Skip system messages for now (Gemini handles them differently)
+            
+            # Start chat with history
+            chat = model.start_chat(history=chat_history[:-1] if len(chat_history) > 1 else [])
+            
+            # Send the last message
+            response = chat.send_message(last_user_msg)
+            
+            if response and response.text:
+                # Yield text delta
+                yield StreamEvent(
+                    type=StreamEventType.TEXT_DELTA,
+                    text_delta=TextDelta(response.text),
+                )
+                
+                # Yield completion
+                yield StreamEvent(
+                    type=StreamEventType.MESSAGE_COMPLETE,
+                    finish_reason="stop",
+                    usage=None,
+                )
+            else:
+                yield StreamEvent(
+                    type=StreamEventType.ERROR,
+                    error="No response from Gemini API",
+                )
+                
+        except Exception as e:
+            yield StreamEvent(
+                type=StreamEventType.ERROR,
+                error=f"Gemini API error: {e}",
+            )
+
+    async def _openai_chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        stream: bool = True,
+        image_path: str | None = None,
+    ) -> AsyncGenerator[StreamEvent, None]:
+        """Chat using OpenAI-compatible API (Ollama, OpenAI, Groq)"""
         client = self.get_client()
 
         # Check if we need to use vision model
@@ -190,7 +365,7 @@ class LLMClient:
                     prompt_tokens=chunk.usage.prompt_tokens,
                     completion_tokens=chunk.usage.completion_tokens,
                     total_tokens=chunk.usage.total_tokens,
-                    cached_tokens=chunk.usage.prompt_tokens_details.cached_tokens,
+                    cached_tokens=getattr(getattr(chunk.usage, 'prompt_tokens_details', None), 'cached_tokens', 0) or 0,
                 )
 
             if not chunk.choices:
@@ -290,7 +465,7 @@ class LLMClient:
                 prompt_tokens=response.usage.prompt_tokens,
                 completion_tokens=response.usage.completion_tokens,
                 total_tokens=response.usage.total_tokens,
-                cached_tokens=response.usage.prompt_tokens_details.cached_tokens,
+                cached_tokens=getattr(getattr(response.usage, 'prompt_tokens_details', None), 'cached_tokens', 0) or 0,
             )
 
         return StreamEvent(

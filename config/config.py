@@ -46,17 +46,14 @@ PROVIDER_CONFIG = {
     },
     Provider.MISTRAL: {
         "base_url": "https://api.mistral.ai/v1",
-        "default_model": "open-mistral-nemo",
+        "default_model": "mistral-small-latest",
         "vision_model": "pixtral-12b-2409",
         "env_key": "MISTRAL_API_KEY",
         "models": [
-            # Free/Open models that work without special access
-            {"name": "open-mistral-nemo", "desc": "Free Open Source ⭐", "type": "coding"},
-            {"name": "open-mistral-7b", "desc": "Free 7B Model", "type": "general"},
-            {"name": "open-mixtral-8x7b", "desc": "Free Mixtral", "type": "general"},
-            # Paid models (need subscription)
-            {"name": "mistral-small-latest", "desc": "Paid - Fast", "type": "coding"},
-            {"name": "mistral-large-latest", "desc": "Paid - Powerful", "type": "general"},
+            {"name": "mistral-small-latest", "desc": "Fast & Efficient ⭐", "type": "coding"},
+            {"name": "mistral-medium-latest", "desc": "Good Balance", "type": "coding"},
+            {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
+            {"name": "codestral-latest", "desc": "Best for Code", "type": "coding"},
             {"name": "pixtral-12b-2409", "desc": "Vision Model", "type": "vision"},
         ],
     },

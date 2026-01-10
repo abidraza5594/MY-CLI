@@ -19,3 +19,9 @@ duckduckgo-search>=8.0.0
 # Image clipboard support
 pillow>=10.0.0
 pywin32>=306; sys_platform == 'win32'
+
+# Mistral AI SDK
+mistralai>=1.0.0
+
+# Google Generative AI
+google-generativeai>=0.8.0
