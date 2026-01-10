@@ -99,12 +99,18 @@ call "%INSTALL_DIR%\venv\Scripts\pip" install -r "%INSTALL_DIR%\requirements.txt
 echo       [OK] Dependencies installed
 
 :: ============================================
-:: PULL AI MODEL
+:: PULL AI MODELS
 :: ============================================
-echo [5/6] Downloading AI model (glm-4.7:cloud)...
-echo       This may take a few minutes on first run...
-ollama pull glm-4.7:cloud
-echo       [OK] Model ready
+echo [5/6] Downloading AI models...
+echo       This may take several minutes on first run...
+echo.
+echo       Pulling coding model (qwen2.5-coder:14b)...
+ollama pull qwen2.5-coder:14b
+echo       [OK] Coding model ready
+echo.
+echo       Pulling vision model (llava:13b)...
+ollama pull llava:13b
+echo       [OK] Vision model ready
 
 :: ============================================
 :: SETUP ABID COMMAND

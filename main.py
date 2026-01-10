@@ -315,14 +315,27 @@ class CLI:
     type=click.Path(exists=True, file_okay=False, path_type=Path),
     help="Current working directory",
 )
+@click.option(
+    "--image",
+    "-i",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="Image file to analyze (uses vision model)",
+)
 def main(
     prompt: str | None,
     cwd: Path | None,
+    image: Path | None,
 ):
     try:
         config = load_config(cwd=cwd)
     except Exception as e:
         console.print(f"[error]Configuration Error: {e}[/error]")
+
+    # Store image path in config for later use
+    if image:
+        config.image_path = str(image)
+    else:
+        config.image_path = None
 
     errors = config.validate()
 

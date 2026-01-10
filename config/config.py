@@ -7,9 +7,10 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class ModelConfig(BaseModel):
-    name: str = "glm-4.7:cloud"
-    temperature: float = Field(default=1, ge=0.0, le=2.0)
-    context_window: int = 198_000
+    name: str = "qwen2.5-coder:14b"
+    vision_model: str = "llava:13b"
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    context_window: int = 32_000
 
 
 class ShellEnvironmentPolicy(BaseModel):
@@ -120,6 +121,10 @@ class Config(BaseModel):
     @model_name.setter
     def model_name(self, value: str) -> None:
         self.model.name = value
+
+    @property
+    def vision_model_name(self) -> str:
+        return self.model.vision_model
 
     @property
     def temperature(self) -> float:

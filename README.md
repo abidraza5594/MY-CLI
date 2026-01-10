@@ -58,12 +58,27 @@ abid
 # With prompt
 abid "list all files"
 
+# With image (uses vision model automatically)
+abid --image screenshot.png "fix the error shown in this screenshot"
+abid -i error.png "what's wrong in this code?"
+
 # In any project folder
 cd "C:\Projects\my-app"
 abid "add dark mode to this React app"
 abid "fix the login bug"
 abid "create a REST API for users"
 ```
+
+## 🤖 Dual Model System
+
+ABID uses two specialized models:
+
+| Task | Model | Description |
+|------|-------|-------------|
+| **Coding** | `qwen2.5-coder:14b` | Fast, accurate code generation |
+| **Vision** | `llava:13b` | Image analysis, screenshot debugging |
+
+The correct model is selected automatically based on your input!
 
 ## 💡 Example Prompts
 

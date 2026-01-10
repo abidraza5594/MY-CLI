@@ -1,4 +1,6 @@
 import asyncio
+import base64
+from pathlib import Path
 from typing import Any, AsyncGenerator
 from openai import APIConnectionError, APIError, AsyncOpenAI, RateLimitError
 
@@ -23,8 +25,8 @@ class LLMClient:
     def get_client(self) -> AsyncOpenAI:
         if self._client is None:
             self._client = AsyncOpenAI(
-                api_key=self.config.api_key,  # "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"
-                base_url=self.config.base_url,  # "https://openrouter.ai/api/v1"
+                api_key=self.config.api_key,
+                base_url=self.config.base_url,
             )
         return self._client
 
@@ -52,21 +54,58 @@ class LLMClient:
             for tool in tools
         ]
 
+    def _has_image_in_messages(self, messages: list[dict[str, Any]]) -> bool:
+        """Check if any message contains an image."""
+        for msg in messages:
+            content = msg.get("content")
+            if isinstance(content, list):
+                for item in content:
+                    if isinstance(item, dict) and item.get("type") == "image_url":
+                        return True
+        return False
+
+    def _encode_image_to_base64(self, image_path: str) -> str:
+        """Encode an image file to base64."""
+        with open(image_path, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+
+    def _get_image_mime_type(self, image_path: str) -> str:
+        """Get MIME type from image path."""
+        ext = Path(image_path).suffix.lower()
+        mime_types = {
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".gif": "image/gif",
+            ".webp": "image/webp",
+        }
+        return mime_types.get(ext, "image/jpeg")
+
     async def chat_completion(
         self,
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
         stream: bool = True,
+        image_path: str | None = None,
     ) -> AsyncGenerator[StreamEvent, None]:
         client = self.get_client()
 
+        # Check if we need to use vision model
+        has_image = self._has_image_in_messages(messages) or image_path is not None
+        model_to_use = self.config.vision_model_name if has_image else self.config.model_name
+
+        # If image_path provided, add it to the last user message
+        if image_path and Path(image_path).exists():
+            messages = self._add_image_to_messages(messages, image_path)
+
         kwargs = {
-            "model": self.config.model_name,
+            "model": model_to_use,
             "messages": messages,
             "stream": stream,
         }
 
-        if tools:
+        # Vision models typically don't support tools well
+        if tools and not has_image:
             kwargs["tools"] = self._build_tools(tools)
             kwargs["tool_choice"] = "auto"
 
@@ -105,6 +144,34 @@ class LLMClient:
                     error=f"API error: {e}",
                 )
                 return
+
+    def _add_image_to_messages(
+        self, messages: list[dict[str, Any]], image_path: str
+    ) -> list[dict[str, Any]]:
+        """Add image to the last user message."""
+        messages = messages.copy()
+        
+        # Find last user message
+        for i in range(len(messages) - 1, -1, -1):
+            if messages[i].get("role") == "user":
+                content = messages[i].get("content", "")
+                
+                # Convert to multimodal format
+                base64_image = self._encode_image_to_base64(image_path)
+                mime_type = self._get_image_mime_type(image_path)
+                
+                messages[i]["content"] = [
+                    {"type": "text", "text": content if isinstance(content, str) else str(content)},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{mime_type};base64,{base64_image}"
+                        }
+                    }
+                ]
+                break
+        
+        return messages
 
     async def _stream_response(
         self,
