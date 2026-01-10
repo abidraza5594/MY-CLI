@@ -47,29 +47,20 @@ PROVIDER_CONFIG = {
     },
     Provider.MISTRAL: {
         "base_url": "https://api.mistral.ai/v1",
-        "default_model": "devstral-2512",
-        "vision_model": "pixtral-large-2411",
+        "default_model": "mistral-small-latest",
+        "vision_model": "pixtral-large-latest",
         "env_key": "MISTRAL_API_KEY",
         "models": [
-            # Coding Models
-            {"name": "devstral-2512", "desc": "Best for Coding ⭐", "type": "coding"},
-            # Large Models
+            # Use "-latest" suffix for most models - it auto-resolves to current version
+            {"name": "codestral-latest", "desc": "Best for Coding ⭐", "type": "coding"},
+            {"name": "mistral-small-latest", "desc": "Fast & Efficient", "type": "coding"},
             {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
-            {"name": "mistral-large-2512", "desc": "Large v2512", "type": "general"},
-            # Medium Models
-            {"name": "mistral-medium-2508", "desc": "Good Balance", "type": "general"},
-            # Small Models
-            {"name": "mistral-small-2506", "desc": "Fast & Efficient", "type": "coding"},
-            # Ministral (Mini)
-            {"name": "ministral-14b-2512", "desc": "Mini 14B", "type": "general"},
-            {"name": "ministral-8b-2512", "desc": "Mini 8B Fast", "type": "general"},
-            {"name": "ministral-3b-2512", "desc": "Mini 3B Fastest", "type": "general"},
-            # Reasoning
-            {"name": "magistral-medium-2509", "desc": "Reasoning Medium", "type": "general"},
-            {"name": "magistral-small-2509", "desc": "Reasoning Small", "type": "general"},
-            # Vision
-            {"name": "pixtral-large-2411", "desc": "Best Vision ⭐", "type": "vision"},
-            {"name": "pixtral-12b-2409", "desc": "Vision 12B", "type": "vision"},
+            {"name": "mistral-medium-latest", "desc": "Good Balance", "type": "general"},
+            {"name": "open-mistral-nemo", "desc": "Open Source 12B", "type": "general"},
+            {"name": "ministral-8b-latest", "desc": "Mini 8B Fast", "type": "general"},
+            {"name": "ministral-3b-latest", "desc": "Mini 3B Fastest", "type": "general"},
+            {"name": "pixtral-large-latest", "desc": "Best Vision ⭐", "type": "vision"},
+            {"name": "pixtral-12b-latest", "desc": "Vision 12B", "type": "vision"},
         ],
     },
     Provider.OPENAI: {
