@@ -1,116 +1,135 @@
-# MY-CLI - AI Coding Agent
+# ABID - AI Coding Assistant 🤖
 
-A powerful terminal-based AI coding assistant that helps you with coding tasks using LLM models.
+A powerful terminal-based AI coding assistant that helps you with coding tasks.
 
-## Features
+```
+     _    ____ ___ ____  
+    / \  | __ )_ _|  _ \ 
+   / _ \ |  _ \| || | | |
+  / ___ \| |_) | || |_| |
+ /_/   \_\____/___|____/ 
+                         
+ Your AI Coding Partner
+```
 
-- 🤖 Interactive CLI chat with AI
-- 🛠️ Built-in tools for file operations, shell commands, web search
-- 🔌 MCP (Model Context Protocol) support
-- 💾 Session persistence and checkpoints
-- 🔒 Safety approval system for dangerous operations
-- 🪝 Hook system for automation
+## ⚡ Quick Install (Windows)
 
-## Installation
+### Prerequisites
+1. Install [Python](https://python.org) (3.10+)
+2. Install [Ollama](https://ollama.ai)
 
-### 1. Clone the repository
+### Installation
 ```bash
 git clone https://github.com/abidraza5594/MY-CLI.git
 cd MY-CLI
+install.bat
 ```
 
-### 2. Create virtual environment
-```bash
-python -m venv venv
-```
+That's it! The installer will:
+- ✅ Create virtual environment
+- ✅ Install all dependencies
+- ✅ Download AI model (glm-4.7:cloud)
+- ✅ Add `abid` command to your system
 
-### 3. Activate virtual environment
+## 🚀 Usage
 
-**Windows:**
-```powershell
-.\venv\Scripts\activate
-```
-
-**Linux/Mac:**
-```bash
-source venv/bin/activate
-```
-
-### 4. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-### With Ollama (Local LLM)
-
-1. Install [Ollama](https://ollama.ai)
-2. Pull the model:
-```bash
-ollama pull glm-4.7:cloud
-```
-
-3. Run the agent:
-
-**Windows (PowerShell):**
-```powershell
-$env:API_KEY="ollama"; $env:BASE_URL="http://localhost:11434/v1"; python main.py
-```
-
-**Linux/Mac:**
-```bash
-API_KEY=ollama BASE_URL=http://localhost:11434/v1 python main.py
-```
-
-### With OpenAI or other providers
+Open a **new terminal** and use anywhere:
 
 ```bash
-API_KEY=your-api-key BASE_URL=https://api.openai.com/v1 python main.py
+# Interactive mode
+abid
+
+# With prompt
+abid "list all files in current directory"
+
+# In any project
+cd "D:\your-project"
+abid "add dark mode to this React app"
 ```
 
-## Commands
+## 💡 Example Prompts
 
-Once running, you can use these commands:
+| Task | Prompt |
+|------|--------|
+| Explore Project | `abid "show me the project structure"` |
+| Add Feature | `abid "add a search bar to the header"` |
+| Fix Bug | `abid "fix the login authentication issue"` |
+| Refactor | `abid "refactor this code to use async/await"` |
+| Create API | `abid "create REST API for user management"` |
+
+## 🛠️ Features
+
+- 🔍 **Smart Code Analysis** - Understands your entire codebase
+- ✏️ **Auto Edit** - Makes changes in correct files
+- 🔎 **Code Search** - Finds relevant code quickly
+- 💻 **Shell Commands** - Runs build, test commands
+- 🌐 **Web Search** - Searches for solutions online
+- 💾 **Session Save** - Save and resume conversations
+
+## ⌨️ Commands (Interactive Mode)
 
 | Command | Description |
 |---------|-------------|
 | `/help` | Show help |
-| `/exit` | Exit the agent |
+| `/exit` | Exit |
 | `/clear` | Clear conversation |
 | `/config` | Show configuration |
-| `/model <name>` | Change model |
+| `/model <name>` | Change AI model |
 | `/tools` | List available tools |
 | `/save` | Save session |
-| `/resume <id>` | Resume saved session |
 
-## Available Tools
+## 🔧 Manual Installation
 
-- `read_file` - Read file contents
-- `write_file` - Create/write files
-- `edit` - Edit files with search/replace
-- `shell` - Execute shell commands
-- `list_dir` - List directory contents
-- `grep` - Search in files
-- `glob` - Find files by pattern
-- `web_search` - Search the web
-- `web_fetch` - Fetch web pages
-- `todos` - Task management
-- `memory` - Store user preferences
+If `install.bat` doesn't work:
 
-## Configuration
+```bash
+# 1. Clone repo
+git clone https://github.com/abidraza5594/MY-CLI.git
+cd MY-CLI
 
-Create `.ai-agent/config.toml` in your project:
+# 2. Create venv
+python -m venv venv
+venv\Scripts\activate
 
-```toml
-[model]
-name = "glm-4.7:cloud"
-temperature = 0.7
+# 3. Install packages
+pip install -r requirements.txt
 
-[approval]
-policy = "on-request"  # auto, on-request, never
+# 4. Pull model
+ollama pull glm-4.7:cloud
+
+# 5. Run
+set API_KEY=ollama
+set BASE_URL=http://localhost:11434/v1
+python main.py
 ```
 
-## License
+## 📁 Project Structure
+
+```
+MY-CLI/
+├── main.py           # Entry point
+├── install.bat       # Auto installer
+├── abid.bat          # CLI launcher
+├── requirements.txt  # Dependencies
+├── agent/            # AI agent logic
+├── client/           # LLM client
+├── tools/            # Built-in tools
+│   └── builtin/      # File, shell, search tools
+├── config/           # Configuration
+├── context/          # Context management
+├── prompts/          # System prompts
+├── safety/           # Safety checks
+└── ui/               # Terminal UI
+```
+
+## 🤝 Contributing
+
+Pull requests welcome! 
+
+## 📄 License
 
 MIT
+
+---
+
+Made with ❤️ by Abid
