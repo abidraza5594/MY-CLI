@@ -147,6 +147,23 @@ class CLI:
                 console.print(f"[success]Model changed to: {cmd_args} [/success]")
             else:
                 console.print(f"Current model: {self.config.model_name}")
+        elif cmd_name == "/vision":
+            if cmd_args:
+                self.config.model.vision_model = cmd_args
+                console.print(f"[success]Vision model changed to: {cmd_args} [/success]")
+            else:
+                console.print(f"Current vision model: {self.config.vision_model_name}")
+        elif cmd_name == "/models":
+            import subprocess
+            console.print("\n[bold]Available Ollama Models:[/bold]")
+            try:
+                result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
+                if result.returncode == 0:
+                    console.print(result.stdout)
+                else:
+                    console.print("[error]Failed to list models. Is Ollama running?[/error]")
+            except FileNotFoundError:
+                console.print("[error]Ollama not found.[/error]")
         elif cmd_name == "/approval":
             if cmd_args:
                 try:
@@ -321,15 +338,61 @@ class CLI:
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
     help="Image file to analyze (uses vision model)",
 )
+@click.option(
+    "--model",
+    "-m",
+    type=str,
+    help="Specify Ollama model to use (e.g., llama3, codellama, mistral)",
+)
+@click.option(
+    "--vision-model",
+    "-v",
+    type=str,
+    help="Specify vision model for image tasks (e.g., llava, bakllava)",
+)
+@click.option(
+    "--list-models",
+    "-l",
+    is_flag=True,
+    help="List all available Ollama models",
+)
 def main(
     prompt: str | None,
     cwd: Path | None,
     image: Path | None,
+    model: str | None,
+    vision_model: str | None,
+    list_models: bool,
 ):
+    # List available models if requested
+    if list_models:
+        import subprocess
+        console.print("\n[bold]Available Ollama Models:[/bold]")
+        try:
+            result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
+            if result.returncode == 0:
+                console.print(result.stdout)
+            else:
+                console.print("[error]Failed to list models. Is Ollama running?[/error]")
+        except FileNotFoundError:
+            console.print("[error]Ollama not found. Please install Ollama first.[/error]")
+        return
+
     try:
         config = load_config(cwd=cwd)
     except Exception as e:
         console.print(f"[error]Configuration Error: {e}[/error]")
+        sys.exit(1)
+
+    # Override model if specified via CLI
+    if model:
+        config.model.name = model
+        console.print(f"[dim]Using model: {model}[/dim]")
+    
+    # Override vision model if specified via CLI
+    if vision_model:
+        config.model.vision_model = vision_model
+        console.print(f"[dim]Using vision model: {vision_model}[/dim]")
 
     # Store image path in config for later use
     if image:

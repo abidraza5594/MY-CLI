@@ -105,6 +105,9 @@ class Config(BaseModel):
     user_instructions: str | None = None
 
     debug: bool = False
+    
+    # Image path for vision model support
+    image_path: str | None = None
 
     @property
     def api_key(self) -> str | None:

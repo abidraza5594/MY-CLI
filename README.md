@@ -32,7 +32,7 @@ install.bat
 **That's it!** The installer automatically:
 - ✅ Creates virtual environment
 - ✅ Installs all dependencies  
-- ✅ Downloads AI model (glm-4.7:cloud)
+- ✅ Downloads AI models (qwen2.5-coder:14b + llava:13b)
 - ✅ Adds `abid` command to your system
 
 ### After Installation
@@ -40,14 +40,6 @@ install.bat
 1. **Close the terminal**
 2. **Open a NEW PowerShell window**
 3. **Type `abid` anywhere!**
-
-```bash
-# Go to any project
-cd "D:\your-project"
-
-# Start coding with AI
-abid
-```
 
 ## 🚀 Usage
 
@@ -58,27 +50,117 @@ abid
 # With prompt
 abid "list all files"
 
+# With specific model
+abid --model llama3 "explain this code"
+abid -m codellama "refactor this function"
+
 # With image (uses vision model automatically)
-abid --image screenshot.png "fix the error shown in this screenshot"
+abid --image screenshot.png "fix the error shown here"
 abid -i error.png "what's wrong in this code?"
 
-# In any project folder
-cd "C:\Projects\my-app"
-abid "add dark mode to this React app"
-abid "fix the login bug"
-abid "create a REST API for users"
+# With custom vision model
+abid -i screenshot.png -v bakllava "analyze this UI"
+
+# List all available models
+abid --list-models
+abid -l
 ```
+
+## 🔄 Model Management
+
+### CLI Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--model` | `-m` | Use specific coding model |
+| `--vision-model` | `-v` | Use specific vision model |
+| `--image` | `-i` | Provide image file |
+| `--list-models` | `-l` | List all Ollama models |
+
+### Examples
+
+```bash
+# List all your downloaded models
+abid -l
+
+# Use different coding model
+abid -m llama3 "write a function"
+abid -m codellama:13b "optimize this code"
+abid -m mistral "explain async/await"
+abid -m deepseek-coder "create REST API"
+
+# Use different vision model
+abid -i error.png -v bakllava "fix this error"
+abid -i ui.png -v llava:34b "improve this design"
+
+# Combine options
+abid -m codellama -i screenshot.png "fix the bug shown"
+```
+
+### Interactive Commands
+
+Change models during a session:
+
+```bash
+> /models              # List all available Ollama models
+> /model llama3        # Switch to llama3
+> /model codellama:13b # Switch to codellama 13b
+> /vision bakllava     # Switch vision model to bakllava
+> /config              # Show current configuration
+```
+
+## 🖼️ Image Support
+
+### How to Use Images
+
+```bash
+# Method 1: CLI flag (recommended)
+abid --image path/to/image.png "describe this"
+abid -i screenshot.png "fix the error"
+
+# Method 2: Full path
+abid -i "C:\Users\you\Desktop\error.png" "what's wrong?"
+
+# Method 3: Relative path
+abid -i ./screenshots/bug.png "debug this"
+```
+
+### Supported Formats
+- PNG (.png)
+- JPEG (.jpg, .jpeg)
+- GIF (.gif)
+- WebP (.webp)
+
+### Use Cases
+
+| Scenario | Command |
+|----------|---------|
+| Debug error screenshot | `abid -i error.png "fix this error"` |
+| Analyze UI design | `abid -i ui.png "improve this layout"` |
+| Understand code screenshot | `abid -i code.png "explain this code"` |
+| Fix console error | `abid -i console.png "what's causing this?"` |
 
 ## 🤖 Dual Model System
 
-ABID uses two specialized models:
-
-| Task | Model | Description |
-|------|-------|-------------|
+| Task | Default Model | Description |
+|------|---------------|-------------|
 | **Coding** | `qwen2.5-coder:14b` | Fast, accurate code generation |
 | **Vision** | `llava:13b` | Image analysis, screenshot debugging |
 
 The correct model is selected automatically based on your input!
+
+### Popular Alternative Models
+
+**Coding Models:**
+- `codellama` - Meta's code-focused model
+- `deepseek-coder` - Great for code generation
+- `llama3` - General purpose, good at coding
+- `mistral` - Fast and efficient
+
+**Vision Models:**
+- `llava` - Default vision model
+- `bakllava` - Alternative vision model
+- `llava:34b` - Larger, more accurate
 
 ## 💡 Example Prompts
 
@@ -89,16 +171,7 @@ The correct model is selected automatically based on your input!
 | Fix Bug | `abid "fix the authentication issue"` |
 | Refactor | `abid "refactor to use async/await"` |
 | Create API | `abid "create REST API for products"` |
-| Add Tests | `abid "add unit tests for utils"` |
-
-## 🛠️ Features
-
-- 🔍 **Smart Code Analysis** - Understands your entire codebase
-- ✏️ **Auto Edit** - Makes changes in correct files automatically
-- 🔎 **Code Search** - Finds relevant code with grep/glob
-- 💻 **Shell Commands** - Runs build, test, lint commands
-- 🌐 **Web Search** - Searches for solutions online
-- 💾 **Session Save** - Save and resume conversations
+| Debug Image | `abid -i error.png "fix this"` |
 
 ## ⌨️ Interactive Commands
 
@@ -108,7 +181,9 @@ The correct model is selected automatically based on your input!
 | `/exit` | Exit |
 | `/clear` | Clear conversation |
 | `/config` | Show configuration |
-| `/model <name>` | Change AI model |
+| `/models` | List available Ollama models |
+| `/model <name>` | Change coding model |
+| `/vision <name>` | Change vision model |
 | `/tools` | List available tools |
 | `/save` | Save session |
 
@@ -128,8 +203,9 @@ python -m venv venv
 # 3. Install packages
 pip install -r requirements.txt
 
-# 4. Pull model
-ollama pull glm-4.7:cloud
+# 4. Pull models
+ollama pull qwen2.5-coder:14b
+ollama pull llava:13b
 
 # 5. Run manually
 $env:API_KEY="ollama"

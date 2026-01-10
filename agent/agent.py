@@ -58,9 +58,13 @@ class Agent:
             tool_calls: list[ToolCall] = []
             usage: TokenUsage | None = None
 
+            # Pass image_path only on first turn (when image is provided)
+            image_to_use = self.config.image_path if self.session.turn_count == 1 else None
+            
             async for event in self.session.client.chat_completion(
                 self.session.context_manager.get_messages(),
                 tools=tool_schemas if tool_schemas else None,
+                image_path=image_to_use,
             ):
                 if event.type == StreamEventType.TEXT_DELTA:
                     if event.text_delta:
