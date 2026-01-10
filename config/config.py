@@ -39,9 +39,9 @@ PROVIDER_CONFIG = {
         "vision_model": "gemini-2.0-flash",
         "env_key": "GEMINI_API_KEY",
         "models": [
-            {"name": "gemini-2.0-flash", "desc": "Best Overall - Fast & Smart", "type": "coding"},
-            {"name": "gemini-1.5-flash", "desc": "Fast, Good for Code", "type": "coding"},
-            {"name": "gemini-1.5-pro", "desc": "Most Capable, Slower", "type": "general"},
+            {"name": "gemini-2.0-flash", "desc": "Best & Fast ⭐", "type": "coding"},
+            {"name": "gemini-1.5-flash-latest", "desc": "Fast, Good for Code", "type": "coding"},
+            {"name": "gemini-1.5-pro-latest", "desc": "Most Capable", "type": "general"},
             {"name": "gemini-2.0-flash", "desc": "Vision Support", "type": "vision"},
         ],
     },
