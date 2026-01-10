@@ -1,79 +1,116 @@
-# AI Agent
+# MY-CLI - AI Coding Agent
 
-An AI agent that can execute tasks using tools and manage conversations.
+A powerful terminal-based AI coding assistant that helps you with coding tasks using LLM models.
 
 ## Features
 
-### Core Functionality
+- 🤖 Interactive CLI chat with AI
+- 🛠️ Built-in tools for file operations, shell commands, web search
+- 🔌 MCP (Model Context Protocol) support
+- 💾 Session persistence and checkpoints
+- 🔒 Safety approval system for dangerous operations
+- 🪝 Hook system for automation
 
-- Interactive and single-run modes
-- Streaming text responses
-- Multi-turn conversations with tool calling
-- Configurable model settings and temperature
+## Installation
 
-### Built-in Tools
+### 1. Clone the repository
+```bash
+git clone https://github.com/abidraza5594/MY-CLI.git
+cd MY-CLI
+```
 
-- File operations: read, write, edit files
-- Directory operations: list directories, search with glob patterns
-- Text search: grep for pattern matching
-- Shell execution: run shell commands
-- Web access: search and fetch web content
-- Memory: store and retrieve information
-- Todo: manage task lists
+### 2. Create virtual environment
+```bash
+python -m venv venv
+```
 
-### Context Management
+### 3. Activate virtual environment
 
-- Automatic context compression when approaching token limits
-- Tool output pruning to manage context size
-- Token usage tracking
+**Windows:**
+```powershell
+.\venv\Scripts\activate
+```
 
-### Safety and Approval
+**Linux/Mac:**
+```bash
+source venv/bin/activate
+```
 
-- Multiple approval policies: on-request, auto, never, yolo
-- Dangerous command detection and blocking
-- Path-based safety checks
-- User confirmation prompts for mutating operations
+### 4. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-### Session Management
+## Usage
 
-- Save and resume sessions
-- Create checkpoints
-- Persistent session storage
+### With Ollama (Local LLM)
 
-### MCP Integration
+1. Install [Ollama](https://ollama.ai)
+2. Pull the model:
+```bash
+ollama pull glm-4.7:cloud
+```
 
-- Connect to Model Context Protocol servers
-- Use tools from MCP servers
-- Support for stdio and HTTP/SSE transports
+3. Run the agent:
 
-### Subagents
+**Windows (PowerShell):**
+```powershell
+$env:API_KEY="ollama"; $env:BASE_URL="http://localhost:11434/v1"; python main.py
+```
 
-- Specialized subagents for specific tasks
-- Built-in subagents: codebase investigator, code reviewer
-- Configurable subagent definitions with custom tools and limits
+**Linux/Mac:**
+```bash
+API_KEY=ollama BASE_URL=http://localhost:11434/v1 python main.py
+```
 
-### Loop Detection
+### With OpenAI or other providers
 
-- Detects repeating actions
-- Prevents infinite loops in agent execution
+```bash
+API_KEY=your-api-key BASE_URL=https://api.openai.com/v1 python main.py
+```
 
-### Hooks System
+## Commands
 
-- Execute scripts before/after agent runs
-- Execute scripts before/after tool calls
-- Error handling hooks
-- Custom commands and scripts
+Once running, you can use these commands:
 
-### Configuration
+| Command | Description |
+|---------|-------------|
+| `/help` | Show help |
+| `/exit` | Exit the agent |
+| `/clear` | Clear conversation |
+| `/config` | Show configuration |
+| `/model <name>` | Change model |
+| `/tools` | List available tools |
+| `/save` | Save session |
+| `/resume <id>` | Resume saved session |
 
-- Configurable working directory
-- Tool allowlisting
-- Developer and user instructions
-- Shell environment policies
-- MCP server configuration
+## Available Tools
 
-### User Interface
+- `read_file` - Read file contents
+- `write_file` - Create/write files
+- `edit` - Edit files with search/replace
+- `shell` - Execute shell commands
+- `list_dir` - List directory contents
+- `grep` - Search in files
+- `glob` - Find files by pattern
+- `web_search` - Search the web
+- `web_fetch` - Fetch web pages
+- `todos` - Task management
+- `memory` - Store user preferences
 
-- Terminal UI with formatted output
-- Command interface: /help, /config, /tools, /mcp, /stats, /save, /resume, /checkpoint, /restore
-- Real-time tool call visualization
+## Configuration
+
+Create `.ai-agent/config.toml` in your project:
+
+```toml
+[model]
+name = "glm-4.7:cloud"
+temperature = 0.7
+
+[approval]
+policy = "on-request"  # auto, on-request, never
+```
+
+## License
+
+MIT
