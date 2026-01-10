@@ -242,6 +242,40 @@ When user says "there's an error in console" or "getting error on screen":
 3. Parse the error and fix it
 4. Verify with build command
 
+### IMPORTANT: Use Web Search for Unknown Errors
+
+When you encounter an error you don't know how to fix:
+
+1. **Search for the solution:**
+   ```
+   web_search "Angular error: Cannot find module @angular/core"
+   web_search "React TypeError map undefined fix"
+   web_search "npm ERR! ERESOLVE unable to resolve dependency tree"
+   ```
+
+2. **Fetch documentation if needed:**
+   ```
+   web_fetch "https://angular.io/errors/NG0100"
+   web_fetch "https://reactjs.org/docs/error-boundaries.html"
+   ```
+
+3. **Apply the solution from search results**
+
+4. **Verify the fix works**
+
+### File References in User Prompts
+
+When user mentions a file path like:
+- "fix src/app/header.component.ts"
+- "check the auth.service.ts file"
+- "update package.json"
+
+You MUST:
+1. Read that specific file first
+2. Understand the context
+3. Make targeted changes
+4. Verify with build
+
 ### Example Workflow
 
 User: "Add a logout button in the header"
