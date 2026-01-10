@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 import sys
+import tempfile
 import click
 
 from agent.agent import Agent
@@ -12,6 +13,55 @@ from config.loader import load_config
 from ui.tui import TUI, get_console
 
 console = get_console()
+
+
+def get_clipboard_image() -> str | None:
+    """Get image from clipboard and save to temp file. Returns path or None."""
+    try:
+        import sys
+        if sys.platform == 'win32':
+            import win32clipboard
+            from PIL import Image
+            import io
+            
+            win32clipboard.OpenClipboard()
+            try:
+                # Try to get image from clipboard
+                if win32clipboard.IsClipboardFormatAvailable(win32clipboard.CF_DIB):
+                    data = win32clipboard.GetClipboardData(win32clipboard.CF_DIB)
+                    # Convert DIB to image
+                    import struct
+                    # Skip BITMAPINFOHEADER
+                    offset = 40  # Size of BITMAPINFOHEADER
+                    header = data[:offset]
+                    width = struct.unpack('<i', header[4:8])[0]
+                    height = struct.unpack('<i', header[8:12])[0]
+                    
+                    # Create BMP file in memory
+                    bmp_header = b'BM' + struct.pack('<I', len(data) + 14) + b'\x00\x00\x00\x00' + struct.pack('<I', 54)
+                    bmp_data = bmp_header + data
+                    
+                    img = Image.open(io.BytesIO(bmp_data))
+                    
+                    # Save to temp file
+                    temp_path = Path(tempfile.gettempdir()) / "abid_clipboard_image.png"
+                    img.save(str(temp_path), "PNG")
+                    return str(temp_path)
+            finally:
+                win32clipboard.CloseClipboard()
+        else:
+            # For Linux/Mac, try using PIL's ImageGrab
+            from PIL import ImageGrab
+            img = ImageGrab.grabclipboard()
+            if img:
+                temp_path = Path(tempfile.gettempdir()) / "abid_clipboard_image.png"
+                img.save(str(temp_path), "PNG")
+                return str(temp_path)
+    except ImportError:
+        return None
+    except Exception:
+        return None
+    return None
 
 
 class CLI:
@@ -153,6 +203,17 @@ class CLI:
                 console.print(f"[success]Vision model changed to: {cmd_args} [/success]")
             else:
                 console.print(f"Current vision model: {self.config.vision_model_name}")
+        elif cmd_name == "/paste":
+            # Paste image from clipboard
+            image_path = get_clipboard_image()
+            if image_path:
+                self.config.image_path = image_path
+                console.print(f"[success]Image pasted from clipboard![/success]")
+                console.print(f"[dim]Saved to: {image_path}[/dim]")
+                console.print(f"[dim]Now type your question about the image.[/dim]")
+            else:
+                console.print("[error]No image found in clipboard![/error]")
+                console.print("[dim]Copy an image (Ctrl+C) first, then use /paste[/dim]")
         elif cmd_name == "/models":
             import subprocess
             try:
@@ -386,6 +447,12 @@ class CLI:
     is_flag=True,
     help="List all available Ollama models",
 )
+@click.option(
+    "--paste",
+    "-p",
+    is_flag=True,
+    help="Use image from clipboard (copy image first with Ctrl+C)",
+)
 def main(
     prompt: str | None,
     cwd: Path | None,
@@ -393,6 +460,7 @@ def main(
     model: str | None,
     vision_model: str | None,
     list_models: bool,
+    paste: bool,
 ):
     # List available models if requested
     if list_models:
@@ -469,6 +537,16 @@ def main(
     # Store image path in config for later use
     if image:
         config.image_path = str(image)
+    elif paste:
+        # Try to get image from clipboard
+        clipboard_image = get_clipboard_image()
+        if clipboard_image:
+            config.image_path = clipboard_image
+            console.print(f"[success]Using image from clipboard[/success]")
+        else:
+            console.print("[error]No image found in clipboard![/error]")
+            console.print("[dim]Copy an image first (Ctrl+C on image), then run again with --paste[/dim]")
+            sys.exit(1)
     else:
         config.image_path = None
 

@@ -75,6 +75,7 @@ abid -l
 | `--model` | `-m` | Use specific coding model |
 | `--vision-model` | `-v` | Use specific vision model |
 | `--image` | `-i` | Provide image file |
+| `--paste` | `-p` | Use image from clipboard |
 | `--list-models` | `-l` | List all Ollama models |
 
 ### Examples
@@ -111,18 +112,27 @@ Change models during a session:
 
 ## 🖼️ Image Support
 
-### How to Use Images
+### Method 1: Copy-Paste from Clipboard (Easiest!)
 
 ```bash
-# Method 1: CLI flag (recommended)
+# Step 1: Copy any image (Ctrl+C on image, or screenshot with Win+Shift+S)
+# Step 2: Run with --paste flag
+abid --paste "fix this error"
+abid -p "what's wrong in this screenshot?"
+
+# In interactive mode, use /paste command
+> /paste
+Image pasted from clipboard!
+> what's wrong in this code?
+```
+
+### Method 2: Image File Path
+
+```bash
+# With image file
 abid --image path/to/image.png "describe this"
 abid -i screenshot.png "fix the error"
-
-# Method 2: Full path
 abid -i "C:\Users\you\Desktop\error.png" "what's wrong?"
-
-# Method 3: Relative path
-abid -i ./screenshots/bug.png "debug this"
 ```
 
 ### Supported Formats
@@ -135,9 +145,9 @@ abid -i ./screenshots/bug.png "debug this"
 
 | Scenario | Command |
 |----------|---------|
-| Debug error screenshot | `abid -i error.png "fix this error"` |
-| Analyze UI design | `abid -i ui.png "improve this layout"` |
-| Understand code screenshot | `abid -i code.png "explain this code"` |
+| Screenshot error | `abid -p "fix this error"` (after copying) |
+| Debug error file | `abid -i error.png "fix this error"` |
+| Analyze UI design | `abid -p "improve this layout"` |
 | Fix console error | `abid -i console.png "what's causing this?"` |
 
 ## 🤖 Dual Model System
@@ -184,6 +194,7 @@ The correct model is selected automatically based on your input!
 | `/models` | List available Ollama models |
 | `/model <name>` | Change coding model |
 | `/vision <name>` | Change vision model |
+| `/paste` | Paste image from clipboard |
 | `/tools` | List available tools |
 | `/save` | Save session |
 

@@ -15,3 +15,7 @@ httpx>=0.25.0
 
 # Web search
 duckduckgo-search>=8.0.0
+
+# Image clipboard support
+pillow>=10.0.0
+pywin32>=306; sys_platform == 'win32'
