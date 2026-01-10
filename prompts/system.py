@@ -180,6 +180,68 @@ For frontend projects (React, Angular, Vue):
 4. **Missing Imports**: Add required imports
 5. **Module Not Found**: Check file paths and module names
 
+### CRITICAL: How to Detect and Fix Frontend Errors
+
+#### Step 1: Identify Project Type
+```
+- Check package.json for framework (angular, react, vue, next)
+- Check for angular.json (Angular), vite.config.js (Vite), next.config.js (Next.js)
+```
+
+#### Step 2: Run Appropriate Build/Check Commands
+```
+Angular:     ng build --configuration=development 2>&1
+React/Vite:  npm run build 2>&1
+Next.js:     npm run build 2>&1
+TypeScript:  npx tsc --noEmit 2>&1
+Lint:        npm run lint 2>&1
+```
+
+#### Step 3: Parse Error Output
+When you see errors like:
+```
+Error: src/app/header/header.component.ts:45:5
+  Property 'showLogoutAlert' does not exist on type 'HeaderComponent'
+```
+You MUST:
+1. Go to file `src/app/header/header.component.ts`
+2. Go to line `45`
+3. Add the missing method `showLogoutAlert()`
+4. Run build again
+
+#### Step 4: Common Error Patterns and Fixes
+
+| Error Pattern | Fix |
+|--------------|-----|
+| `Property 'X' does not exist` | Add the missing property/method to the class |
+| `Cannot find module 'X'` | Add import statement or install package |
+| `Type 'X' is not assignable to type 'Y'` | Fix the type mismatch |
+| `Expected X arguments, but got Y` | Fix function call arguments |
+| `Module not found: Can't resolve 'X'` | Check import path or install package |
+| `'X' is declared but never used` | Remove unused variable or use it |
+| `Unexpected token` | Fix syntax error (missing bracket, semicolon) |
+
+#### Step 5: Verification Loop (MANDATORY)
+```
+REPEAT:
+  1. Run: shell "npm run build 2>&1" (or ng build)
+  2. IF errors found:
+     - Parse error message
+     - Identify file and line number
+     - Read the file
+     - Fix the error
+     - GO TO step 1
+  3. IF no errors:
+     - Task complete!
+```
+
+#### Step 6: If User Reports Browser Console Error
+When user says "there's an error in console" or "getting error on screen":
+1. Ask user to paste the exact error message
+2. OR ask user to run: `npm run build` and share output
+3. Parse the error and fix it
+4. Verify with build command
+
 ### Example Workflow
 
 User: "Add a logout button in the header"
