@@ -6,11 +6,56 @@ from typing import Any
 from pydantic import BaseModel, Field, model_validator
 
 
+class Provider(str, Enum):
+    OLLAMA = "ollama"
+    GEMINI = "gemini"
+    MISTRAL = "mistral"
+    OPENAI = "openai"
+    GROQ = "groq"
+
+
+# Provider configurations
+PROVIDER_CONFIG = {
+    Provider.OLLAMA: {
+        "base_url": "http://localhost:11434/v1",
+        "default_model": "qwen2.5-coder:7b",
+        "vision_model": "llava:7b",
+        "env_key": "OLLAMA_API_KEY",
+        "default_key": "ollama",
+    },
+    Provider.GEMINI: {
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "default_model": "gemini-2.0-flash",
+        "vision_model": "gemini-2.0-flash",
+        "env_key": "GEMINI_API_KEY",
+    },
+    Provider.MISTRAL: {
+        "base_url": "https://api.mistral.ai/v1",
+        "default_model": "mistral-small-latest",
+        "vision_model": "pixtral-12b-2409",
+        "env_key": "MISTRAL_API_KEY",
+    },
+    Provider.OPENAI: {
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-4o-mini",
+        "vision_model": "gpt-4o-mini",
+        "env_key": "OPENAI_API_KEY",
+    },
+    Provider.GROQ: {
+        "base_url": "https://api.groq.com/openai/v1",
+        "default_model": "llama-3.1-70b-versatile",
+        "vision_model": "llama-3.2-11b-vision-preview",
+        "env_key": "GROQ_API_KEY",
+    },
+}
+
+
 class ModelConfig(BaseModel):
-    name: str = "qwen2.5-coder:14b"
-    vision_model: str = "llava:13b"
+    name: str = "qwen2.5-coder:7b"
+    vision_model: str = "llava:7b"
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     context_window: int = 32_000
+    provider: Provider = Provider.OLLAMA
 
 
 class ShellEnvironmentPolicy(BaseModel):
@@ -110,12 +155,40 @@ class Config(BaseModel):
     image_path: str | None = None
 
     @property
+    def provider(self) -> Provider:
+        return self.model.provider
+
+    @provider.setter
+    def provider(self, value: Provider) -> None:
+        self.model.provider = value
+
+    @property
     def api_key(self) -> str | None:
-        return os.environ.get("API_KEY")
+        # First check provider-specific env var
+        provider_config = PROVIDER_CONFIG.get(self.model.provider, {})
+        env_key = provider_config.get("env_key", "API_KEY")
+        key = os.environ.get(env_key)
+        
+        # Fallback to generic API_KEY
+        if not key:
+            key = os.environ.get("API_KEY")
+        
+        # For Ollama, use default key if not set
+        if not key and self.model.provider == Provider.OLLAMA:
+            key = provider_config.get("default_key", "ollama")
+        
+        return key
 
     @property
     def base_url(self) -> str | None:
-        return os.environ.get("BASE_URL")
+        # First check env var
+        url = os.environ.get("BASE_URL")
+        if url:
+            return url
+        
+        # Use provider default
+        provider_config = PROVIDER_CONFIG.get(self.model.provider, {})
+        return provider_config.get("base_url")
 
     @property
     def model_name(self) -> str:
@@ -137,11 +210,28 @@ class Config(BaseModel):
     def temperature(self, value: str) -> None:
         self.model.temperature = value
 
+    def set_provider(self, provider: Provider, api_key: str | None = None) -> None:
+        """Set provider and optionally API key."""
+        self.model.provider = provider
+        provider_config = PROVIDER_CONFIG.get(provider, {})
+        
+        # Set default models for provider
+        self.model.name = provider_config.get("default_model", self.model.name)
+        self.model.vision_model = provider_config.get("vision_model", self.model.vision_model)
+        
+        # Set API key in environment if provided
+        if api_key:
+            env_key = provider_config.get("env_key", "API_KEY")
+            os.environ[env_key] = api_key
+            os.environ["API_KEY"] = api_key
+
     def validate(self) -> list[str]:
         errors: list[str] = []
 
         if not self.api_key:
-            errors.append("No API key found. Set API_KEY environment variable")
+            provider_config = PROVIDER_CONFIG.get(self.model.provider, {})
+            env_key = provider_config.get("env_key", "API_KEY")
+            errors.append(f"No API key found. Set {env_key} environment variable")
 
         if not self.cwd.exists():
             errors.append(f"Working directory does not exist: {self.cwd}")

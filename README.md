@@ -16,7 +16,7 @@ A powerful terminal-based AI coding assistant that helps you with coding tasks.
 
 ### Prerequisites
 1. Install [Python](https://python.org) (3.10+)
-2. Install [Ollama](https://ollama.ai)
+2. Install [Ollama](https://ollama.ai) (optional - for local models)
 
 ### Installation
 
@@ -32,14 +32,67 @@ install.bat
 **That's it!** The installer automatically:
 - ✅ Creates virtual environment
 - ✅ Installs all dependencies  
-- ✅ Downloads AI models (qwen2.5-coder:14b + llava:13b)
+- ✅ Downloads AI models (if using Ollama)
 - ✅ Adds `abid` command to your system
 
-### After Installation
+## 🌐 Multiple AI Providers
 
-1. **Close the terminal**
-2. **Open a NEW PowerShell window**
-3. **Type `abid` anywhere!**
+ABID supports multiple AI providers - use local models OR cloud APIs!
+
+| Provider | Type | Speed | Cost | Best For |
+|----------|------|-------|------|----------|
+| **Ollama** | Local | Depends on PC | Free | Privacy, Offline |
+| **Gemini** | Cloud | Fast | Free tier | General use |
+| **Mistral** | Cloud | Very Fast | Paid | Fast coding |
+| **OpenAI** | Cloud | Fast | Paid | Best quality |
+| **Groq** | Cloud | Ultra Fast | Free tier | Speed |
+
+### Quick Start with Different Providers
+
+```bash
+# Local with Ollama (default - free, unlimited)
+abid "write a function"
+
+# With Gemini (free tier available)
+abid --provider gemini --api-key YOUR_KEY "write a function"
+
+# With Mistral (fast!)
+abid --provider mistral -k YOUR_KEY "write a function"
+
+# With OpenAI
+abid --provider openai -k YOUR_KEY "write a function"
+
+# With Groq (ultra fast, free tier)
+abid --provider groq -k YOUR_KEY "write a function"
+```
+
+### Set API Key Once (Environment Variable)
+
+```powershell
+# For Gemini
+$env:GEMINI_API_KEY = "your-api-key"
+
+# For Mistral
+$env:MISTRAL_API_KEY = "your-api-key"
+
+# For OpenAI
+$env:OPENAI_API_KEY = "your-api-key"
+
+# For Groq
+$env:GROQ_API_KEY = "your-api-key"
+
+# Then just use provider flag
+abid --provider gemini "write code"
+```
+
+### Interactive Provider Selection
+
+```bash
+> /provider           # Show provider menu
+> /provider gemini    # Switch to Gemini
+> /provider mistral   # Switch to Mistral
+> /config             # Show current config
+```
 
 ## 🚀 Usage
 
@@ -50,138 +103,63 @@ abid
 # With prompt
 abid "list all files"
 
+# With specific provider
+abid --provider gemini -k YOUR_KEY "explain this code"
+
 # With specific model
-abid --model llama3 "explain this code"
-abid -m codellama "refactor this function"
+abid -m llama3 "explain this code"
 
-# With image (uses vision model automatically)
-abid --image screenshot.png "fix the error shown here"
-abid -i error.png "what's wrong in this code?"
+# With image
+abid --paste "fix this error"
+abid -i screenshot.png "what's wrong?"
 
-# With custom vision model
-abid -i screenshot.png -v bakllava "analyze this UI"
-
-# List all available models
-abid --list-models
+# List Ollama models
 abid -l
 ```
 
-## 🔄 Model Management
-
-### CLI Options
+## 🔄 CLI Options
 
 | Option | Short | Description |
 |--------|-------|-------------|
-| `--model` | `-m` | Use specific coding model |
-| `--vision-model` | `-v` | Use specific vision model |
-| `--image` | `-i` | Provide image file |
-| `--paste` | `-p` | Use image from clipboard |
-| `--list-models` | `-l` | List all Ollama models |
-
-### Examples
-
-```bash
-# List all your downloaded models
-abid -l
-
-# Use different coding model
-abid -m llama3 "write a function"
-abid -m codellama:13b "optimize this code"
-abid -m mistral "explain async/await"
-abid -m deepseek-coder "create REST API"
-
-# Use different vision model
-abid -i error.png -v bakllava "fix this error"
-abid -i ui.png -v llava:34b "improve this design"
-
-# Combine options
-abid -m codellama -i screenshot.png "fix the bug shown"
-```
-
-### Interactive Commands
-
-Change models during a session:
-
-```bash
-> /models              # List all available Ollama models
-> /model llama3        # Switch to llama3
-> /model codellama:13b # Switch to codellama 13b
-> /vision bakllava     # Switch vision model to bakllava
-> /config              # Show current configuration
-```
+| `--provider` | | AI provider (ollama/gemini/mistral/openai/groq) |
+| `--api-key` | `-k` | API key for cloud providers |
+| `--model` | `-m` | Specific model to use |
+| `--vision-model` | `-v` | Vision model for images |
+| `--image` | `-i` | Image file path |
+| `--paste` | `-p` | Use clipboard image |
+| `--list-models` | `-l` | List Ollama models |
 
 ## 🖼️ Image Support
 
-### Method 1: Copy-Paste from Clipboard (Easiest!)
+### Copy-Paste (Easiest!)
 
 ```bash
-# Step 1: Copy any image (Ctrl+C on image, or screenshot with Win+Shift+S)
-# Step 2: Run with --paste flag
+# 1. Copy image (Ctrl+C or Win+Shift+S for screenshot)
+# 2. Run:
 abid --paste "fix this error"
-abid -p "what's wrong in this screenshot?"
+abid -p "what's wrong?"
 
-# In interactive mode, use /paste command
+# In interactive mode:
 > /paste
-Image pasted from clipboard!
 > what's wrong in this code?
 ```
 
-### Method 2: Image File Path
+### Image File
 
 ```bash
-# With image file
-abid --image path/to/image.png "describe this"
-abid -i screenshot.png "fix the error"
-abid -i "C:\Users\you\Desktop\error.png" "what's wrong?"
+abid -i screenshot.png "fix this"
+abid --image error.png "debug this"
 ```
 
-### Supported Formats
-- PNG (.png)
-- JPEG (.jpg, .jpeg)
-- GIF (.gif)
-- WebP (.webp)
+## 🤖 Default Models by Provider
 
-### Use Cases
-
-| Scenario | Command |
-|----------|---------|
-| Screenshot error | `abid -p "fix this error"` (after copying) |
-| Debug error file | `abid -i error.png "fix this error"` |
-| Analyze UI design | `abid -p "improve this layout"` |
-| Fix console error | `abid -i console.png "what's causing this?"` |
-
-## 🤖 Dual Model System
-
-| Task | Default Model | Description |
-|------|---------------|-------------|
-| **Coding** | `qwen2.5-coder:14b` | Fast, accurate code generation |
-| **Vision** | `llava:13b` | Image analysis, screenshot debugging |
-
-The correct model is selected automatically based on your input!
-
-### Popular Alternative Models
-
-**Coding Models:**
-- `codellama` - Meta's code-focused model
-- `deepseek-coder` - Great for code generation
-- `llama3` - General purpose, good at coding
-- `mistral` - Fast and efficient
-
-**Vision Models:**
-- `llava` - Default vision model
-- `bakllava` - Alternative vision model
-- `llava:34b` - Larger, more accurate
-
-## 💡 Example Prompts
-
-| Task | Command |
-|------|---------|
-| Explore | `abid "show me the project structure"` |
-| Add Feature | `abid "add a search bar to the header"` |
-| Fix Bug | `abid "fix the authentication issue"` |
-| Refactor | `abid "refactor to use async/await"` |
-| Create API | `abid "create REST API for products"` |
-| Debug Image | `abid -i error.png "fix this"` |
+| Provider | Coding Model | Vision Model |
+|----------|--------------|--------------|
+| Ollama | qwen2.5-coder:7b | llava:7b |
+| Gemini | gemini-2.0-flash | gemini-2.0-flash |
+| Mistral | mistral-small-latest | pixtral-12b-2409 |
+| OpenAI | gpt-4o-mini | gpt-4o-mini |
+| Groq | llama-3.1-70b-versatile | llama-3.2-11b-vision-preview |
 
 ## ⌨️ Interactive Commands
 
@@ -189,18 +167,35 @@ The correct model is selected automatically based on your input!
 |---------|-------------|
 | `/help` | Show help |
 | `/exit` | Exit |
-| `/clear` | Clear conversation |
-| `/config` | Show configuration |
-| `/models` | List available Ollama models |
-| `/model <name>` | Change coding model |
+| `/provider` | Change AI provider |
+| `/models` | List Ollama models |
+| `/model <name>` | Change model |
 | `/vision <name>` | Change vision model |
-| `/paste` | Paste image from clipboard |
-| `/tools` | List available tools |
+| `/paste` | Paste clipboard image |
+| `/config` | Show configuration |
+| `/clear` | Clear conversation |
 | `/save` | Save session |
 
-## 🔧 Manual Installation
+## 💡 Example Prompts
 
-If `install.bat` doesn't work:
+```bash
+# Explore project
+abid "show me the project structure"
+
+# Add feature
+abid "add a search bar to the header"
+
+# Fix bug
+abid "fix the authentication issue"
+
+# With image
+abid -p "fix the error in this screenshot"
+
+# Fast with Groq
+abid --provider groq -k KEY "refactor this code"
+```
+
+## 🔧 Manual Installation
 
 ```bash
 # 1. Clone
@@ -214,15 +209,22 @@ python -m venv venv
 # 3. Install packages
 pip install -r requirements.txt
 
-# 4. Pull models
-ollama pull qwen2.5-coder:14b
-ollama pull llava:13b
+# 4. For Ollama (optional)
+ollama pull qwen2.5-coder:7b
+ollama pull llava:7b
 
-# 5. Run manually
-$env:API_KEY="ollama"
-$env:BASE_URL="http://localhost:11434/v1"
+# 5. Run
 python main.py
 ```
+
+## 🔑 Get API Keys
+
+| Provider | Get Key | Free Tier |
+|----------|---------|-----------|
+| Gemini | [Google AI Studio](https://makersuite.google.com/app/apikey) | ✅ Yes |
+| Mistral | [Mistral Console](https://console.mistral.ai/) | ❌ No |
+| OpenAI | [OpenAI Platform](https://platform.openai.com/api-keys) | ❌ No |
+| Groq | [Groq Console](https://console.groq.com/) | ✅ Yes |
 
 ## 📁 Project Structure
 
@@ -230,7 +232,6 @@ python main.py
 MY-CLI/
 ├── main.py           # Entry point
 ├── install.bat       # Auto installer
-├── abid.bat          # CLI launcher
 ├── requirements.txt  # Dependencies
 ├── agent/            # AI agent logic
 ├── client/           # LLM client

@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -8,7 +9,7 @@ from agent.agent import Agent
 from agent.events import AgentEventType
 from agent.persistence import PersistenceManager, SessionSnapshot
 from agent.session import Session
-from config.config import ApprovalPolicy, Config
+from config.config import ApprovalPolicy, Config, Provider, PROVIDER_CONFIG
 from config.loader import load_config
 from ui.tui import TUI, get_console
 
@@ -79,9 +80,10 @@ class CLI:
         self.tui.print_welcome(
             "AI Agent",
             lines=[
+                f"provider: {self.config.provider.value}",
                 f"model: {self.config.model_name}",
                 f"cwd: {self.config.cwd}",
-                "commands: /help /config /approval /model /exit",
+                "commands: /help /config /provider /model /exit",
             ],
         )
 
@@ -185,12 +187,77 @@ class CLI:
             console.print("[success]Conversation cleared [/success]")
         elif command == "/config":
             console.print("\n[bold]Current Configuration[/bold]")
+            console.print(f"  Provider: {self.config.provider.value}")
             console.print(f"  Model: {self.config.model_name}")
+            console.print(f"  Vision Model: {self.config.vision_model_name}")
             console.print(f"  Temperature: {self.config.temperature}")
             console.print(f"  Approval: {self.config.approval.value}")
             console.print(f"  Working Dir: {self.config.cwd}")
             console.print(f"  Max Turns: {self.config.max_turns}")
-            console.print(f"  Hooks Enabled: {self.config.hooks_enabled}")
+        elif cmd_name == "/provider":
+            if cmd_args:
+                # Check if it's a provider name
+                try:
+                    provider = Provider(cmd_args.lower())
+                    self.config.set_provider(provider)
+                    console.print(f"[success]Provider changed to: {provider.value}[/success]")
+                    console.print(f"[dim]Model: {self.config.model_name}[/dim]")
+                    console.print(f"[dim]Vision: {self.config.vision_model_name}[/dim]")
+                    
+                    # Check if API key is set
+                    if not self.config.api_key:
+                        provider_config = PROVIDER_CONFIG.get(provider, {})
+                        env_key = provider_config.get("env_key", "API_KEY")
+                        console.print(f"[warning]Set {env_key} environment variable for this provider[/warning]")
+                except ValueError:
+                    console.print(f"[error]Unknown provider: {cmd_args}[/error]")
+                    console.print(f"[dim]Available: {', '.join(p.value for p in Provider)}[/dim]")
+            else:
+                # Show provider selection menu
+                console.print("\n[bold]Available Providers:[/bold]")
+                providers = list(Provider)
+                for i, p in enumerate(providers, 1):
+                    marker = " [green]◄ current[/green]" if p == self.config.provider else ""
+                    pconfig = PROVIDER_CONFIG.get(p, {})
+                    console.print(f"  [cyan]{i}[/cyan]. {p.value}{marker}")
+                    console.print(f"      [dim]Model: {pconfig.get('default_model', 'N/A')}[/dim]")
+                
+                console.print(f"\n  [dim]0. Cancel[/dim]")
+                console.print("\n[bold]Select provider:[/bold]")
+                
+                try:
+                    choice = console.input("> ").strip()
+                    if choice and choice != "0":
+                        choice_num = int(choice)
+                        if 1 <= choice_num <= len(providers):
+                            selected = providers[choice_num - 1]
+                            
+                            # Ask for API key if not Ollama
+                            if selected != Provider.OLLAMA:
+                                pconfig = PROVIDER_CONFIG.get(selected, {})
+                                env_key = pconfig.get("env_key", "API_KEY")
+                                existing_key = os.environ.get(env_key)
+                                
+                                if not existing_key:
+                                    console.print(f"\n[bold]Enter {env_key} (or press Enter to skip):[/bold]")
+                                    api_key = console.input("> ").strip()
+                                    if api_key:
+                                        self.config.set_provider(selected, api_key)
+                                    else:
+                                        self.config.set_provider(selected)
+                                else:
+                                    self.config.set_provider(selected)
+                            else:
+                                self.config.set_provider(selected)
+                            
+                            console.print(f"[success]Provider changed to: {selected.value}[/success]")
+                            console.print(f"[dim]Model: {self.config.model_name}[/dim]")
+                        else:
+                            console.print("[error]Invalid selection[/error]")
+                except ValueError:
+                    console.print("[error]Please enter a valid number[/error]")
+                except KeyboardInterrupt:
+                    console.print("\n[dim]Cancelled[/dim]")
         elif cmd_name == "/model":
             if cmd_args:
                 self.config.model_name = cmd_args
@@ -453,6 +520,17 @@ class CLI:
     is_flag=True,
     help="Use image from clipboard (copy image first with Ctrl+C)",
 )
+@click.option(
+    "--provider",
+    type=click.Choice(["ollama", "gemini", "mistral", "openai", "groq"], case_sensitive=False),
+    help="AI provider to use (default: ollama)",
+)
+@click.option(
+    "--api-key",
+    "-k",
+    type=str,
+    help="API key for the selected provider",
+)
 def main(
     prompt: str | None,
     cwd: Path | None,
@@ -461,6 +539,8 @@ def main(
     vision_model: str | None,
     list_models: bool,
     paste: bool,
+    provider: str | None,
+    api_key: str | None,
 ):
     # List available models if requested
     if list_models:
@@ -523,6 +603,19 @@ def main(
     except Exception as e:
         console.print(f"[error]Configuration Error: {e}[/error]")
         sys.exit(1)
+
+    # Set provider if specified
+    if provider:
+        try:
+            p = Provider(provider.lower())
+            config.set_provider(p, api_key)
+            console.print(f"[dim]Using provider: {p.value}[/dim]")
+        except ValueError:
+            console.print(f"[error]Unknown provider: {provider}[/error]")
+            sys.exit(1)
+    elif api_key:
+        # If only API key provided, set it for current provider
+        config.set_provider(config.provider, api_key)
 
     # Override model if specified via CLI
     if model:
