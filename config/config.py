@@ -23,14 +23,7 @@ PROVIDER_CONFIG = {
         "env_key": "OLLAMA_API_KEY",
         "default_key": "ollama",
         "models": [
-            {"name": "qwen2.5-coder:7b", "desc": "Best for Coding", "type": "coding"},
-            {"name": "qwen2.5-coder:14b", "desc": "Better Coding, Slower", "type": "coding"},
-            {"name": "codellama:7b", "desc": "Good for Code", "type": "coding"},
-            {"name": "deepseek-coder:6.7b", "desc": "Fast Coding", "type": "coding"},
-            {"name": "llama3:8b", "desc": "General Purpose", "type": "general"},
-            {"name": "mistral:7b", "desc": "Fast & Smart", "type": "general"},
-            {"name": "llava:7b", "desc": "Vision + Text", "type": "vision"},
-            {"name": "llava:13b", "desc": "Better Vision", "type": "vision"},
+            {"name": "qwen2.5-coder:7b", "desc": "Best for Coding ⭐", "type": "coding"},
         ],
     },
     Provider.GEMINI: {
@@ -47,14 +40,20 @@ PROVIDER_CONFIG = {
     Provider.MISTRAL: {
         "base_url": "https://api.mistral.ai/v1",
         "default_model": "mistral-small-latest",
-        "vision_model": "pixtral-12b-2409",
+        "vision_model": "pixtral-large-latest",
         "env_key": "MISTRAL_API_KEY",
         "models": [
-            {"name": "mistral-small-latest", "desc": "Fast & Efficient ⭐", "type": "coding"},
-            {"name": "mistral-medium-latest", "desc": "Good Balance", "type": "coding"},
+            # Coding Models
+            {"name": "codestral-latest", "desc": "Best for Code ⭐", "type": "coding"},
+            {"name": "mistral-small-latest", "desc": "Fast & Efficient", "type": "coding"},
+            # General Models
             {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
-            {"name": "codestral-latest", "desc": "Best for Code", "type": "coding"},
-            {"name": "pixtral-12b-2409", "desc": "Vision Model", "type": "vision"},
+            {"name": "open-mistral-nemo", "desc": "Good Balance", "type": "general"},
+            {"name": "ministral-8b-latest", "desc": "Mini 8B Fast", "type": "general"},
+            {"name": "ministral-3b-latest", "desc": "Mini 3B Fastest", "type": "general"},
+            # Vision Models
+            {"name": "pixtral-large-latest", "desc": "Best Vision ⭐", "type": "vision"},
+            {"name": "pixtral-12b-latest", "desc": "Vision 12B", "type": "vision"},
         ],
     },
     Provider.OPENAI: {

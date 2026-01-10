@@ -120,8 +120,16 @@ class TUI:
                     line_count = len(value.splitlines()) or 0
                     byte_count = len(value.encode("utf-8", errors="replace"))
                     value = f"<{line_count} lines • {byte_count} bytes>"
-
-            if isinstance(value, bool):
+            elif isinstance(value, (int, float, bool)):
+                value = str(value)
+            elif value is None:
+                value = "null"
+            elif isinstance(value, (list, dict)):
+                import json
+                value = json.dumps(value, ensure_ascii=False)
+                if len(value) > 100:
+                    value = value[:100] + "..."
+            else:
                 value = str(value)
 
             table.add_row(key, value)
