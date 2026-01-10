@@ -47,24 +47,29 @@ PROVIDER_CONFIG = {
     },
     Provider.MISTRAL: {
         "base_url": "https://api.mistral.ai/v1",
-        "default_model": "devstral-small-2505",
+        "default_model": "devstral-2512",
         "vision_model": "pixtral-large-2411",
         "env_key": "MISTRAL_API_KEY",
         "models": [
             # Coding Models
-            {"name": "devstral-small-2505", "desc": "Best for Coding ⭐ Free", "type": "coding"},
-            {"name": "codestral-2501", "desc": "Cutting-edge Code Model", "type": "coding"},
-            # General Models
-            {"name": "mistral-large-2411", "desc": "Most Powerful", "type": "general"},
-            {"name": "mistral-small-2503", "desc": "Fast & Efficient", "type": "general"},
-            {"name": "mistral-medium-2505", "desc": "Good Balance", "type": "general"},
-            {"name": "open-mistral-nemo", "desc": "Open Source 12B", "type": "general"},
-            {"name": "ministral-8b-2410", "desc": "Small & Fast", "type": "general"},
-            # Vision Models
-            {"name": "pixtral-large-2411", "desc": "Best Vision ⭐", "type": "vision"},
-            {"name": "pixtral-12b-2409", "desc": "Vision Model", "type": "vision"},
+            {"name": "devstral-2512", "desc": "Best for Coding ⭐", "type": "coding"},
+            # Large Models
+            {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
+            {"name": "mistral-large-2512", "desc": "Large v2512", "type": "general"},
+            # Medium Models
+            {"name": "mistral-medium-2508", "desc": "Good Balance", "type": "general"},
+            # Small Models
+            {"name": "mistral-small-2506", "desc": "Fast & Efficient", "type": "coding"},
+            # Ministral (Mini)
+            {"name": "ministral-14b-2512", "desc": "Mini 14B", "type": "general"},
+            {"name": "ministral-8b-2512", "desc": "Mini 8B Fast", "type": "general"},
+            {"name": "ministral-3b-2512", "desc": "Mini 3B Fastest", "type": "general"},
             # Reasoning
-            {"name": "magistral-small-2506", "desc": "Reasoning Model Free", "type": "general"},
+            {"name": "magistral-medium-2509", "desc": "Reasoning Medium", "type": "general"},
+            {"name": "magistral-small-2509", "desc": "Reasoning Small", "type": "general"},
+            # Vision
+            {"name": "pixtral-large-2411", "desc": "Best Vision ⭐", "type": "vision"},
+            {"name": "pixtral-12b-2409", "desc": "Vision 12B", "type": "vision"},
         ],
     },
     Provider.OPENAI: {
