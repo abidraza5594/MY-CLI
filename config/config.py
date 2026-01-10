@@ -47,16 +47,24 @@ PROVIDER_CONFIG = {
     },
     Provider.MISTRAL: {
         "base_url": "https://api.mistral.ai/v1",
-        "default_model": "codestral-latest",
-        "vision_model": "pixtral-12b-2409",
+        "default_model": "devstral-small-2505",
+        "vision_model": "pixtral-large-2411",
         "env_key": "MISTRAL_API_KEY",
         "models": [
-            {"name": "codestral-latest", "desc": "Best for Coding ⭐", "type": "coding"},
-            {"name": "mistral-large-latest", "desc": "Most Powerful", "type": "general"},
-            {"name": "mistral-small-latest", "desc": "Fast & Cheap", "type": "general"},
-            {"name": "open-mistral-nemo", "desc": "Good Balance", "type": "general"},
+            # Coding Models
+            {"name": "devstral-small-2505", "desc": "Best for Coding ⭐ Free", "type": "coding"},
+            {"name": "codestral-2501", "desc": "Cutting-edge Code Model", "type": "coding"},
+            # General Models
+            {"name": "mistral-large-2411", "desc": "Most Powerful", "type": "general"},
+            {"name": "mistral-small-2503", "desc": "Fast & Efficient", "type": "general"},
+            {"name": "mistral-medium-2505", "desc": "Good Balance", "type": "general"},
+            {"name": "open-mistral-nemo", "desc": "Open Source 12B", "type": "general"},
+            {"name": "ministral-8b-2410", "desc": "Small & Fast", "type": "general"},
+            # Vision Models
+            {"name": "pixtral-large-2411", "desc": "Best Vision ⭐", "type": "vision"},
             {"name": "pixtral-12b-2409", "desc": "Vision Model", "type": "vision"},
-            {"name": "pixtral-large-latest", "desc": "Best Vision", "type": "vision"},
+            # Reasoning
+            {"name": "magistral-small-2506", "desc": "Reasoning Model Free", "type": "general"},
         ],
     },
     Provider.OPENAI: {
@@ -75,14 +83,14 @@ PROVIDER_CONFIG = {
     Provider.GROQ: {
         "base_url": "https://api.groq.com/openai/v1",
         "default_model": "llama-3.3-70b-versatile",
-        "vision_model": "llama-3.2-11b-vision-preview",
+        "vision_model": "llama-3.2-90b-vision-preview",
         "env_key": "GROQ_API_KEY",
         "models": [
             {"name": "llama-3.3-70b-versatile", "desc": "Best Overall ⭐ Ultra Fast", "type": "coding"},
             {"name": "llama-3.1-8b-instant", "desc": "Fastest, Good for Code", "type": "coding"},
+            {"name": "llama-3.2-90b-vision-preview", "desc": "Vision + Text", "type": "vision"},
             {"name": "mixtral-8x7b-32768", "desc": "Good Balance", "type": "general"},
             {"name": "gemma2-9b-it", "desc": "Google's Model", "type": "general"},
-            {"name": "llama-3.2-11b-vision-preview", "desc": "Vision Model", "type": "vision"},
         ],
     },
 }
