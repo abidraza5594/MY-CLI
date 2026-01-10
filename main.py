@@ -214,44 +214,108 @@ class CLI:
                     console.print(f"[dim]Available: {', '.join(p.value for p in Provider)}[/dim]")
             else:
                 # Show provider selection menu
-                console.print("\n[bold]Available Providers:[/bold]")
+                console.print("\n[bold]╔═══════════════════════════════════════════════════════╗[/bold]")
+                console.print("[bold]║              Choose AI Provider                       ║[/bold]")
+                console.print("[bold]╚═══════════════════════════════════════════════════════╝[/bold]\n")
+                
                 providers = list(Provider)
+                provider_info = {
+                    Provider.OLLAMA: ("Local, Free, Unlimited", "🖥️"),
+                    Provider.GEMINI: ("Google, Free Tier", "🌐"),
+                    Provider.MISTRAL: ("Fast, Best for Coding", "⚡"),
+                    Provider.OPENAI: ("Best Quality, Paid", "🤖"),
+                    Provider.GROQ: ("Ultra Fast, Free Tier", "🚀"),
+                }
+                
                 for i, p in enumerate(providers, 1):
+                    info, emoji = provider_info.get(p, ("", ""))
                     marker = " [green]◄ current[/green]" if p == self.config.provider else ""
-                    pconfig = PROVIDER_CONFIG.get(p, {})
-                    console.print(f"  [cyan]{i}[/cyan]. {p.value}{marker}")
-                    console.print(f"      [dim]Model: {pconfig.get('default_model', 'N/A')}[/dim]")
+                    console.print(f"  [cyan]{i}[/cyan]. {emoji} {p.value.upper()} - {info}{marker}")
                 
                 console.print(f"\n  [dim]0. Cancel[/dim]")
-                console.print("\n[bold]Select provider:[/bold]")
                 
                 try:
-                    choice = console.input("> ").strip()
+                    choice = console.input("\nSelect provider: ").strip()
                     if choice and choice != "0":
                         choice_num = int(choice)
                         if 1 <= choice_num <= len(providers):
                             selected = providers[choice_num - 1]
+                            pconfig = PROVIDER_CONFIG.get(selected, {})
                             
-                            # Ask for API key if not Ollama
+                            # Show models for this provider
+                            console.print(f"\n[bold]Models for {selected.value.upper()}:[/bold]\n")
+                            
+                            models = pconfig.get("models", [])
+                            coding_models = [m for m in models if m.get("type") == "coding"]
+                            general_models = [m for m in models if m.get("type") == "general"]
+                            vision_models = [m for m in models if m.get("type") == "vision"]
+                            
+                            all_models = []
+                            
+                            if coding_models:
+                                console.print("  [yellow]── Coding ──[/yellow]")
+                                for m in coding_models:
+                                    all_models.append(m)
+                                    idx = len(all_models)
+                                    console.print(f"  [cyan]{idx}[/cyan]. {m['name']} [dim]({m['desc']})[/dim]")
+                            
+                            if general_models:
+                                console.print("  [yellow]── General ──[/yellow]")
+                                for m in general_models:
+                                    all_models.append(m)
+                                    idx = len(all_models)
+                                    console.print(f"  [cyan]{idx}[/cyan]. {m['name']} [dim]({m['desc']})[/dim]")
+                            
+                            if vision_models:
+                                console.print("  [yellow]── Vision ──[/yellow]")
+                                for m in vision_models:
+                                    all_models.append(m)
+                                    idx = len(all_models)
+                                    console.print(f"  [cyan]{idx}[/cyan]. {m['name']} [dim]({m['desc']})[/dim]")
+                            
+                            console.print(f"\n  [dim]0. Use default ({pconfig.get('default_model', 'N/A')})[/dim]")
+                            
+                            model_choice = console.input("\nSelect model: ").strip()
+                            
+                            selected_model = pconfig.get("default_model")
+                            if model_choice and model_choice != "0":
+                                model_idx = int(model_choice)
+                                if 1 <= model_idx <= len(all_models):
+                                    selected_model = all_models[model_idx - 1]["name"]
+                            
+                            # Ask for API key if not Ollama and not set
                             if selected != Provider.OLLAMA:
-                                pconfig = PROVIDER_CONFIG.get(selected, {})
                                 env_key = pconfig.get("env_key", "API_KEY")
                                 existing_key = os.environ.get(env_key)
                                 
                                 if not existing_key:
-                                    console.print(f"\n[bold]Enter {env_key} (or press Enter to skip):[/bold]")
-                                    api_key = console.input("> ").strip()
+                                    key_urls = {
+                                        Provider.GEMINI: "https://makersuite.google.com/app/apikey",
+                                        Provider.MISTRAL: "https://console.mistral.ai/",
+                                        Provider.OPENAI: "https://platform.openai.com/api-keys",
+                                        Provider.GROQ: "https://console.groq.com/",
+                                    }
+                                    url = key_urls.get(selected, "")
+                                    console.print(f"\n[bold]Enter API Key[/bold]")
+                                    if url:
+                                        console.print(f"[dim]Get key from: {url}[/dim]")
+                                    
+                                    api_key = console.input(f"{env_key}: ").strip()
                                     if api_key:
                                         self.config.set_provider(selected, api_key)
+                                        self.config.model.name = selected_model
                                     else:
-                                        self.config.set_provider(selected)
+                                        console.print("[error]API key required![/error]")
+                                        return True
                                 else:
                                     self.config.set_provider(selected)
+                                    self.config.model.name = selected_model
                             else:
                                 self.config.set_provider(selected)
+                                self.config.model.name = selected_model
                             
-                            console.print(f"[success]Provider changed to: {selected.value}[/success]")
-                            console.print(f"[dim]Model: {self.config.model_name}[/dim]")
+                            console.print(f"\n[success]Provider: {selected.value}[/success]")
+                            console.print(f"[success]Model: {selected_model}[/success]")
                         else:
                             console.print("[error]Invalid selection[/error]")
                 except ValueError:
@@ -531,6 +595,12 @@ class CLI:
     type=str,
     help="API key for the selected provider",
 )
+@click.option(
+    "--setup",
+    "-s",
+    is_flag=True,
+    help="Interactive setup - choose provider, model, and enter API key",
+)
 def main(
     prompt: str | None,
     cwd: Path | None,
@@ -541,6 +611,7 @@ def main(
     paste: bool,
     provider: str | None,
     api_key: str | None,
+    setup: bool,
 ):
     # List available models if requested
     if list_models:
@@ -597,6 +668,161 @@ def main(
         except FileNotFoundError:
             console.print("[error]Ollama not found. Please install Ollama first.[/error]")
         return
+
+    # Interactive setup mode
+    if setup:
+        console.print("\n[bold]╔═══════════════════════════════════════════════════════╗[/bold]")
+        console.print("[bold]║           ABID - AI Provider Setup                    ║[/bold]")
+        console.print("[bold]╚═══════════════════════════════════════════════════════╝[/bold]\n")
+        
+        # Step 1: Choose Provider
+        console.print("[bold]Step 1: Choose AI Provider[/bold]\n")
+        providers = list(Provider)
+        provider_info = {
+            Provider.OLLAMA: ("Local, Free, Unlimited", "🖥️"),
+            Provider.GEMINI: ("Google, Free Tier Available", "🌐"),
+            Provider.MISTRAL: ("Fast, Best for Coding", "⚡"),
+            Provider.OPENAI: ("Best Quality, Paid", "🤖"),
+            Provider.GROQ: ("Ultra Fast, Free Tier", "🚀"),
+        }
+        
+        for i, p in enumerate(providers, 1):
+            info, emoji = provider_info.get(p, ("", ""))
+            console.print(f"  [cyan]{i}[/cyan]. {emoji} {p.value.upper()} - {info}")
+        
+        console.print(f"\n  [dim]0. Cancel[/dim]")
+        
+        try:
+            choice = input("\nSelect provider (1-5): ").strip()
+            if not choice or choice == "0":
+                console.print("[dim]Setup cancelled.[/dim]")
+                return
+            
+            choice_num = int(choice)
+            if not (1 <= choice_num <= len(providers)):
+                console.print("[error]Invalid selection[/error]")
+                return
+            
+            selected_provider = providers[choice_num - 1]
+            pconfig = PROVIDER_CONFIG.get(selected_provider, {})
+            
+            # Step 2: Show available models for this provider
+            console.print(f"\n[bold]Step 2: Choose Model for {selected_provider.value.upper()}[/bold]\n")
+            
+            models = pconfig.get("models", [])
+            
+            # Group by type
+            coding_models = [m for m in models if m.get("type") == "coding"]
+            general_models = [m for m in models if m.get("type") == "general"]
+            vision_models = [m for m in models if m.get("type") == "vision"]
+            
+            all_models = []
+            
+            if coding_models:
+                console.print("  [yellow]── Coding Models ──[/yellow]")
+                for m in coding_models:
+                    all_models.append(m)
+                    idx = len(all_models)
+                    console.print(f"  [cyan]{idx}[/cyan]. {m['name']} [dim]({m['desc']})[/dim]")
+            
+            if general_models:
+                console.print("\n  [yellow]── General Models ──[/yellow]")
+                for m in general_models:
+                    all_models.append(m)
+                    idx = len(all_models)
+                    console.print(f"  [cyan]{idx}[/cyan]. {m['name']} [dim]({m['desc']})[/dim]")
+            
+            if vision_models:
+                console.print("\n  [yellow]── Vision Models ──[/yellow]")
+                for m in vision_models:
+                    all_models.append(m)
+                    idx = len(all_models)
+                    console.print(f"  [cyan]{idx}[/cyan]. {m['name']} [dim]({m['desc']})[/dim]")
+            
+            console.print(f"\n  [dim]0. Use default ({pconfig.get('default_model', 'N/A')})[/dim]")
+            
+            model_choice = input("\nSelect model: ").strip()
+            
+            selected_model = pconfig.get("default_model")
+            if model_choice and model_choice != "0":
+                model_idx = int(model_choice)
+                if 1 <= model_idx <= len(all_models):
+                    selected_model = all_models[model_idx - 1]["name"]
+            
+            # Step 3: API Key (if not Ollama)
+            selected_api_key = None
+            if selected_provider != Provider.OLLAMA:
+                env_key = pconfig.get("env_key", "API_KEY")
+                existing_key = os.environ.get(env_key)
+                
+                console.print(f"\n[bold]Step 3: Enter API Key[/bold]")
+                
+                if existing_key:
+                    console.print(f"[dim]Found existing {env_key} in environment[/dim]")
+                    use_existing = input("Use existing key? (Y/n): ").strip().lower()
+                    if use_existing != 'n':
+                        selected_api_key = existing_key
+                
+                if not selected_api_key:
+                    # Show where to get API key
+                    key_urls = {
+                        Provider.GEMINI: "https://makersuite.google.com/app/apikey",
+                        Provider.MISTRAL: "https://console.mistral.ai/",
+                        Provider.OPENAI: "https://platform.openai.com/api-keys",
+                        Provider.GROQ: "https://console.groq.com/",
+                    }
+                    url = key_urls.get(selected_provider, "")
+                    if url:
+                        console.print(f"[dim]Get your API key from: {url}[/dim]")
+                    
+                    selected_api_key = input(f"Enter {env_key}: ").strip()
+                    
+                    if not selected_api_key:
+                        console.print("[error]API key is required for this provider![/error]")
+                        return
+            
+            # Setup complete - show summary
+            console.print("\n[bold]╔═══════════════════════════════════════════════════════╗[/bold]")
+            console.print("[bold]║                  Setup Complete!                      ║[/bold]")
+            console.print("[bold]╚═══════════════════════════════════════════════════════╝[/bold]\n")
+            
+            console.print(f"  Provider: [green]{selected_provider.value}[/green]")
+            console.print(f"  Model: [green]{selected_model}[/green]")
+            if selected_api_key:
+                console.print(f"  API Key: [green]{'*' * 20}...{selected_api_key[-4:]}[/green]")
+            
+            # Ask to start
+            start_now = input("\nStart ABID now? (Y/n): ").strip().lower()
+            if start_now == 'n':
+                # Show usage command
+                console.print("\n[bold]To use later:[/bold]")
+                if selected_provider == Provider.OLLAMA:
+                    console.print(f"  abid -m {selected_model} \"your prompt\"")
+                else:
+                    console.print(f"  abid --provider {selected_provider.value} -k YOUR_KEY -m {selected_model} \"your prompt\"")
+                return
+            
+            # Set config and continue
+            try:
+                config = load_config(cwd=cwd)
+            except Exception as e:
+                console.print(f"[error]Configuration Error: {e}[/error]")
+                sys.exit(1)
+            
+            config.set_provider(selected_provider, selected_api_key)
+            config.model.name = selected_model
+            
+            # Continue to interactive mode
+            cli = CLI(config)
+            asyncio.run(cli.run_interactive())
+            return
+            
+        except ValueError:
+            console.print("[error]Please enter a valid number[/error]")
+            return
+        except KeyboardInterrupt:
+            console.print("\n[dim]Setup cancelled.[/dim]")
+            return
 
     try:
         config = load_config(cwd=cwd)
