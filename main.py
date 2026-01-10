@@ -155,11 +155,41 @@ class CLI:
                 console.print(f"Current vision model: {self.config.vision_model_name}")
         elif cmd_name == "/models":
             import subprocess
-            console.print("\n[bold]Available Ollama Models:[/bold]")
             try:
                 result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
                 if result.returncode == 0:
-                    console.print(result.stdout)
+                    lines = result.stdout.strip().split('\n')
+                    models = []
+                    for line in lines[1:]:
+                        if line.strip():
+                            model_name = line.split()[0]
+                            models.append(model_name)
+                    
+                    if not models:
+                        console.print("[error]No models found.[/error]")
+                    else:
+                        console.print("\n[bold]Available Ollama Models:[/bold]")
+                        for i, m in enumerate(models, 1):
+                            marker = " [green]◄ current[/green]" if m == self.config.model_name else ""
+                            console.print(f"  [cyan]{i}[/cyan]. {m}{marker}")
+                        
+                        console.print(f"\n  [dim]0. Cancel[/dim]")
+                        console.print("\n[bold]Select model to switch (or 0 to cancel):[/bold]")
+                        
+                        try:
+                            choice = console.input("> ").strip()
+                            if choice and choice != "0":
+                                choice_num = int(choice)
+                                if 1 <= choice_num <= len(models):
+                                    selected = models[choice_num - 1]
+                                    self.config.model_name = selected
+                                    console.print(f"[success]Model changed to: {selected}[/success]")
+                                else:
+                                    console.print("[error]Invalid selection[/error]")
+                        except ValueError:
+                            console.print("[error]Please enter a valid number[/error]")
+                        except KeyboardInterrupt:
+                            console.print("\n[dim]Cancelled[/dim]")
                 else:
                     console.print("[error]Failed to list models. Is Ollama running?[/error]")
             except FileNotFoundError:
@@ -367,11 +397,53 @@ def main(
     # List available models if requested
     if list_models:
         import subprocess
-        console.print("\n[bold]Available Ollama Models:[/bold]")
         try:
             result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
             if result.returncode == 0:
-                console.print(result.stdout)
+                # Parse models from output
+                lines = result.stdout.strip().split('\n')
+                models = []
+                for line in lines[1:]:  # Skip header
+                    if line.strip():
+                        model_name = line.split()[0]
+                        models.append(model_name)
+                
+                if not models:
+                    console.print("[error]No models found. Pull a model first: ollama pull llama3[/error]")
+                    return
+                
+                # Show interactive menu
+                console.print("\n[bold]╔═══════════════════════════════════════╗[/bold]")
+                console.print("[bold]║     Available Ollama Models           ║[/bold]")
+                console.print("[bold]╚═══════════════════════════════════════╝[/bold]\n")
+                
+                for i, m in enumerate(models, 1):
+                    console.print(f"  [cyan]{i}[/cyan]. {m}")
+                
+                console.print(f"\n  [dim]0. Exit without selecting[/dim]")
+                console.print("\n[bold]Select model number (or press Enter to skip):[/bold]")
+                
+                try:
+                    choice = input("> ").strip()
+                    
+                    if not choice or choice == "0":
+                        console.print("[dim]No model selected. Exiting.[/dim]")
+                        return
+                    
+                    choice_num = int(choice)
+                    if 1 <= choice_num <= len(models):
+                        selected_model = models[choice_num - 1]
+                        console.print(f"\n[success]Selected: {selected_model}[/success]")
+                        console.print(f"\n[bold]Usage:[/bold]")
+                        console.print(f"  abid -m {selected_model} \"your prompt here\"")
+                        console.print(f"  abid --model {selected_model} \"your prompt here\"")
+                        console.print(f"\n[dim]Or in interactive mode: /model {selected_model}[/dim]")
+                    else:
+                        console.print("[error]Invalid selection[/error]")
+                except ValueError:
+                    console.print("[error]Please enter a valid number[/error]")
+                except KeyboardInterrupt:
+                    console.print("\n[dim]Cancelled[/dim]")
             else:
                 console.print("[error]Failed to list models. Is Ollama running?[/error]")
         except FileNotFoundError:
