@@ -239,6 +239,18 @@ class TUI:
         }.get(suffix, "text")
 
     def print_welcome(self, title: str, lines: list[str]) -> None:
+        # ASCII Art Banner for ABID
+        banner = """[bold cyan]
+     █████╗ ██████╗ ██╗██████╗ 
+    ██╔══██╗██╔══██╗██║██╔══██╗
+    ███████║██████╔╝██║██║  ██║
+    ██╔══██║██╔══██╗██║██║  ██║
+    ██║  ██║██████╔╝██║██████╔╝
+    ╚═╝  ╚═╝╚═════╝ ╚═╝╚═════╝ [/bold cyan]
+[dim]    AI Coding Agent by Abid[/dim]
+"""
+        self.console.print(banner)
+        
         body = "\n".join(lines)
         self.console.print(
             Panel(

@@ -667,8 +667,18 @@ def main(
 
     # Interactive setup mode
     if setup:
-        console.print("\n[bold]╔═══════════════════════════════════════════════════════╗[/bold]")
-        console.print("[bold]║           ABID - AI Provider Setup                    ║[/bold]")
+        # ASCII Art Banner
+        console.print("""
+[bold cyan]     █████╗ ██████╗ ██╗██████╗ 
+    ██╔══██╗██╔══██╗██║██╔══██╗
+    ███████║██████╔╝██║██║  ██║
+    ██╔══██║██╔══██╗██║██║  ██║
+    ██║  ██║██████╔╝██║██████╔╝
+    ╚═╝  ╚═╝╚═════╝ ╚═╝╚═════╝ [/bold cyan]
+[dim]    AI Coding Agent by Abid[/dim]
+""")
+        console.print("[bold]╔═══════════════════════════════════════════════════════╗[/bold]")
+        console.print("[bold]║              AI Provider Setup                        ║[/bold]")
         console.print("[bold]╚═══════════════════════════════════════════════════════╝[/bold]\n")
         
         # Step 1: Choose Provider
