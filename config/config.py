@@ -23,7 +23,8 @@ PROVIDER_CONFIG = {
         "env_key": "OLLAMA_API_KEY",
         "default_key": "ollama",
         "models": [
-            {"name": "qwen2.5-coder:7b", "desc": "Best for Coding ⭐", "type": "coding"},
+            {"name": "qwen2.5-coder:3b", "desc": "Fast & Good ⭐", "type": "coding"},
+            {"name": "qwen2.5-coder:7b", "desc": "Best Quality, Slower", "type": "coding"},
         ],
     },
     Provider.GEMINI: {
