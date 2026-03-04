@@ -1,6 +1,6 @@
 # ABID - AI Coding Assistant 🤖
 
-A powerful terminal-based AI coding assistant that helps you with coding tasks.
+A powerful terminal-based AI coding assistant powered by **Qwen3.5:9b** with vision support.
 
 ```
      _    ____ ___ ____  
@@ -12,233 +12,591 @@ A powerful terminal-based AI coding assistant that helps you with coding tasks.
  Your AI Coding Partner
 ```
 
-## ⚡ One-Click Install (Windows)
+## ✅ Setup Complete!
+- Model: **qwen3.5:9b** (6.6 GB) ✓
+- Vision Support: **Enabled** 👁️
+- Status: Ready to use!
 
-### Prerequisites
-1. Install [Python](https://python.org) (3.10+)
-2. Install [Ollama](https://ollama.ai) (optional - for local models)
+---
 
-### Installation
+## � Table of Contents
+1. [Quick Start](#quick-start)
+2. [Basic Usage](#basic-usage)
+3. [Vision Support (Screenshots)](#vision-support-screenshots)
+4. [Working with Projects](#working-with-projects)
+5. [Create Complete Projects](#create-complete-projects)
+6. [Fix Bugs](#fix-bugs)
+7. [Add Features](#add-features)
+8. [Interactive Mode](#interactive-mode)
+9. [Advanced Usage](#advanced-usage)
+10. [Troubleshooting](#troubleshooting)
 
+---
+
+## 🚀 Quick Start
+
+### Test It
 ```bash
-# 1. Clone the repo
-git clone https://github.com/abidraza5594/MY-CLI.git
-cd MY-CLI
-
-# 2. Run installer (does everything automatically!)
-install.bat
+abid "hello"
 ```
 
-**That's it!** The installer automatically:
-- ✅ Creates virtual environment
-- ✅ Installs all dependencies  
-- ✅ Downloads AI models (if using Ollama)
-- ✅ Adds `abid` command to your system
-
-## 🌐 Multiple AI Providers
-
-ABID supports multiple AI providers - use local models OR cloud APIs!
-
-| Provider | Type | Speed | Cost | Best For |
-|----------|------|-------|------|----------|
-| **Ollama** | Local | Depends on PC | Free | Privacy, Offline |
-| **Gemini** | Cloud | Fast | Free tier | General use |
-| **Mistral** | Cloud | Very Fast | Paid | Fast coding |
-| **OpenAI** | Cloud | Fast | Paid | Best quality |
-| **Groq** | Cloud | Ultra Fast | Free tier | Speed |
-
-### Quick Start with Different Providers
-
+### Create Angular Todo App
 ```bash
-# Local with Ollama (default - free, unlimited)
-abid "write a function"
-
-# With Gemini (free tier available)
-abid --provider gemini --api-key YOUR_KEY "write a function"
-
-# With Mistral (fast!)
-abid --provider mistral -k YOUR_KEY "write a function"
-
-# With OpenAI
-abid --provider openai -k YOUR_KEY "write a function"
-
-# With Groq (ultra fast, free tier)
-abid --provider groq -k YOUR_KEY "write a function"
+abid "create angular todo app with add, delete, toggle features"
 ```
 
-### Set API Key Once (Environment Variable)
-
-```powershell
-# For Gemini
-$env:GEMINI_API_KEY = "your-api-key"
-
-# For Mistral
-$env:MISTRAL_API_KEY = "your-api-key"
-
-# For OpenAI
-$env:OPENAI_API_KEY = "your-api-key"
-
-# For Groq
-$env:GROQ_API_KEY = "your-api-key"
-
-# Then just use provider flag
-abid --provider gemini "write code"
+### Fix Bug
+```bash
+abid "fix error in src/app/user.service.ts line 45"
 ```
 
-### Interactive Provider Selection
-
+### Interactive Mode
 ```bash
-> /provider           # Show provider menu
-> /provider gemini    # Switch to Gemini
-> /provider mistral   # Switch to Mistral
-> /config             # Show current config
+abid
 ```
 
-## 🚀 Usage
+---
 
+## 💡 Basic Usage
+
+### Single Command
 ```bash
-# Interactive mode
+abid "your prompt here"
+```
+
+### With Specific Model
+```bash
+abid --model qwen3.5:9b "your prompt"
+```
+
+### Help
+```bash
+abid --help
+```
+
+---
+
+## 👁️ Vision Support (Screenshots)
+
+### Qwen3.5:9b can analyze images!
+
+### Use Screenshot from Clipboard
+```bash
+# 1. Take screenshot (Win + Shift + S)
+# 2. Select area
+# 3. Run:
+abid --paste "is image me kya likha hai?"
+```
+
+### Analyze Error Screenshot
+```bash
+abid --paste "fix this error in app.component.ts"
+```
+
+### Design to Code
+```bash
+abid --paste "create Angular component based on this design"
+```
+
+### Code Review from Screenshot
+```bash
+abid --paste "review this code and suggest improvements"
+```
+
+### Use Saved Image File
+```bash
+abid --image "C:\path\to\screenshot.png" "fix this error"
+```
+
+### Vision Examples
+
+**Console Error:**
+```bash
+# Screenshot console error
+abid --paste "This error is showing. Fix it in auth.service.ts"
+```
+
+**UI Bug:**
+```bash
+# Screenshot UI issue
+abid --paste "Button alignment is wrong. Fix CSS in header.component.css"
+```
+
+**Build Error:**
+```bash
+# Screenshot build error
+abid --paste "Build failing. Fix tsconfig.json"
+```
+
+**Note:** Vision analysis takes 30-60 seconds. Be patient!
+
+---
+
+## 🗂️ Working with Projects
+
+### Method 1: Navigate to Project (Recommended)
+```bash
+# Go to your project
+cd D:\MyProjects\angular-app
+
+# Use ABID
+abid "add search feature"
+```
+
+### Method 2: VS Code Terminal (Best)
+```bash
+# 1. Open project in VS Code
+# 2. Open terminal (Ctrl + `)
+# 3. Terminal is already in project folder
+abid "fix the bug"
+```
+
+### Method 3: Use --cwd Flag
+```bash
+abid --cwd "D:\Projects\my-app" "add feature"
+```
+
+### Examples
+
+**Angular Project on D Drive:**
+```bash
+cd D:\MyProjects\employee-app
+abid "add employee search functionality"
+```
+
+**React Project on Desktop:**
+```bash
+cd C:\Users\Abid\Desktop\react-app
+abid "add dark mode toggle"
+```
+
+**Multiple Projects:**
+```bash
+# Backend
+cd D:\Projects\api-server
+abid "add user profile endpoint"
+
+# Frontend
+cd D:\Projects\web-app
+abid "integrate profile API"
+```
+
+---
+
+## 🎨 Create Complete Projects
+
+### Angular Todo App
+```bash
+abid "Create a complete Angular todo application with:
+- Standalone components
+- Add, delete, and toggle todos
+- Mark as complete/incomplete
+- Show total, active, and completed counts
+- Modern CSS with gradient background
+- Responsive design
+Create in 'angular-todo-app' folder"
+```
+
+### React Dashboard
+```bash
+abid "Create a React dashboard with:
+- User stats cards
+- Chart component using Chart.js
+- Sidebar navigation
+- Responsive layout
+- Dark mode toggle
+- TypeScript
+- Tailwind CSS
+Create in 'react-dashboard' folder"
+```
+
+### Node.js REST API
+```bash
+abid "Create a Node.js Express REST API with:
+- User CRUD operations
+- MongoDB connection
+- JWT authentication
+- Input validation
+- Error handling middleware
+- API documentation
+Create in 'api-server' folder"
+```
+
+### Python Flask App
+```bash
+abid "Create a Flask web app with:
+- User registration and login
+- SQLite database
+- Session management
+- Form validation
+- Bootstrap UI
+Create in 'flask-app' folder"
+```
+
+---
+
+## 🐛 Fix Bugs
+
+### Fix Specific Error
+```bash
+abid "fix the error in app.component.ts: 
+TypeError: Cannot read property 'length' of undefined at line 45"
+```
+
+### Debug Issue
+```bash
+abid "debug why the login form is not submitting. 
+Check auth.service.ts and login.component.ts"
+```
+
+### Fix All Errors in File
+```bash
+abid "fix all TypeScript errors in src/app/services/user.service.ts"
+```
+
+### Performance Issue
+```bash
+abid "optimize the slow database query in models/user.py. 
+It's taking 5 seconds to load 1000 users"
+```
+
+### With Screenshot
+```bash
+# Take error screenshot
+abid --paste "fix this error in app.component.ts line 45"
+```
+
+---
+
+## ➕ Add Features
+
+### Add New Feature
+```bash
+abid "add a search functionality to the todo app:
+- Search input field in header
+- Filter todos by text
+- Show 'No results' message
+- Update the count accordingly"
+```
+
+### Add Authentication
+```bash
+abid "add JWT authentication to the Express API:
+- Login and register endpoints
+- Password hashing with bcrypt
+- Protected routes middleware
+- Token validation"
+```
+
+### Add Dark Mode
+```bash
+abid "add dark mode toggle to the React app:
+- Toggle button in navbar
+- Save preference in localStorage
+- Smooth transition animation
+- Update all component styles"
+```
+
+---
+
+## 🎮 Interactive Mode
+
+### Start Interactive Session
+```bash
+abid
+```
+
+### Interactive Commands
+```
+/help              # Show all commands
+/config            # Show current configuration
+/models            # List available models
+/model qwen3.5:9b  # Switch model
+/paste             # Paste screenshot from clipboard
+/clear             # Clear conversation
+/save              # Save session
+/exit              # Exit
+```
+
+### Interactive Workflow Example
+```bash
 abid
 
-# With prompt
-abid "list all files"
+> create a simple calculator app in React
 
-# With specific provider
-abid --provider gemini -k YOUR_KEY "explain this code"
+# Agent creates the app
 
-# With specific model
-abid -m llama3 "explain this code"
+> add scientific calculator functions
 
-# With image
-abid --paste "fix this error"
-abid -i screenshot.png "what's wrong?"
+# Agent adds more features
 
-# List Ollama models
-abid -l
-```
+> fix the division by zero error
 
-## 🔄 CLI Options
+# Agent fixes the bug
 
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--provider` | | AI provider (ollama/gemini/mistral/openai/groq) |
-| `--api-key` | `-k` | API key for cloud providers |
-| `--model` | `-m` | Specific model to use |
-| `--vision-model` | `-v` | Vision model for images |
-| `--image` | `-i` | Image file path |
-| `--paste` | `-p` | Use clipboard image |
-| `--list-models` | `-l` | List Ollama models |
-
-## 🖼️ Image Support
-
-### Copy-Paste (Easiest!)
-
-```bash
-# 1. Copy image (Ctrl+C or Win+Shift+S for screenshot)
-# 2. Run:
-abid --paste "fix this error"
-abid -p "what's wrong?"
-
-# In interactive mode:
 > /paste
-> what's wrong in this code?
+# Paste screenshot
+
+> implement this design
+
+# Agent implements design
+
+> /exit
 ```
 
-### Image File
+---
 
+## 🔧 Advanced Usage
+
+### Specific File Operations
 ```bash
-abid -i screenshot.png "fix this"
-abid --image error.png "debug this"
+# Single file
+abid "fix error in src/app/services/user.service.ts"
+
+# Multiple files
+abid "update user.service.ts and user.component.ts"
+
+# With line number
+abid "fix bug at line 45 in auth.service.ts"
+
+# Create new file
+abid "create a new utility file utils/validation.ts with email and password validators"
 ```
 
-## 🤖 Default Models by Provider
-
-| Provider | Coding Model | Vision Model |
-|----------|--------------|--------------|
-| Ollama | qwen2.5-coder:7b | llava:7b |
-| Gemini | gemini-2.0-flash | gemini-2.0-flash |
-| Mistral | mistral-small-latest | pixtral-12b-2409 |
-| OpenAI | gpt-4o-mini | gpt-4o-mini |
-| Groq | llama-3.1-70b-versatile | llama-3.2-11b-vision-preview |
-
-## ⌨️ Interactive Commands
-
-| Command | Description |
-|---------|-------------|
-| `/help` | Show help |
-| `/exit` | Exit |
-| `/provider` | Change AI provider |
-| `/models` | List Ollama models |
-| `/model <name>` | Change model |
-| `/vision <name>` | Change vision model |
-| `/paste` | Paste clipboard image |
-| `/config` | Show configuration |
-| `/clear` | Clear conversation |
-| `/save` | Save session |
-
-## 💡 Example Prompts
-
+### Code Review & Refactoring
 ```bash
-# Explore project
-abid "show me the project structure"
+# Review code
+abid "review the code in src/components/UserList.tsx and suggest improvements"
 
-# Add feature
-abid "add a search bar to the header"
-
-# Fix bug
-abid "fix the authentication issue"
-
-# With image
-abid -p "fix the error in this screenshot"
-
-# Fast with Groq
-abid --provider groq -k KEY "refactor this code"
+# Refactor code
+abid "refactor app.component.ts to use:
+- Separate service for todo operations
+- RxJS observables
+- Better error handling
+- TypeScript interfaces"
 ```
 
-## 🔧 Manual Installation
-
+### Testing
 ```bash
-# 1. Clone
-git clone https://github.com/abidraza5594/MY-CLI.git
-cd MY-CLI
-
-# 2. Create venv
-python -m venv venv
-.\venv\Scripts\activate
-
-# 3. Install packages
-pip install -r requirements.txt
-
-# 4. For Ollama (optional)
-ollama pull qwen2.5-coder:7b
-ollama pull llava:7b
-
-# 5. Run
-python main.py
+abid "create unit tests for the UserService in user.service.spec.ts using Jest"
 ```
 
-## 🔑 Get API Keys
-
-| Provider | Get Key | Free Tier |
-|----------|---------|-----------|
-| Gemini | [Google AI Studio](https://makersuite.google.com/app/apikey) | ✅ Yes |
-| Mistral | [Mistral Console](https://console.mistral.ai/) | ❌ No |
-| OpenAI | [OpenAI Platform](https://platform.openai.com/api-keys) | ❌ No |
-| Groq | [Groq Console](https://console.groq.com/) | ✅ Yes |
-
-## 📁 Project Structure
-
+### Documentation
+```bash
+abid "add JSDoc comments to all functions in utils/helpers.ts"
 ```
-MY-CLI/
-├── main.py           # Entry point
-├── install.bat       # Auto installer
-├── requirements.txt  # Dependencies
-├── agent/            # AI agent logic
-├── client/           # LLM client
-├── tools/            # Built-in tools
-├── config/           # Configuration
-└── ui/               # Terminal UI
+
+### Code Conversion
+```bash
+abid "convert the JavaScript code in app.js to TypeScript with proper types"
 ```
+
+### Multi-Step Projects
+```bash
+abid "Create a full-stack blog application:
+
+Backend (Node.js + Express + MongoDB):
+- User authentication
+- Post CRUD operations
+- Comment system
+- File upload for images
+
+Frontend (React + TypeScript):
+- Login/Register pages
+- Post list and detail pages
+- Create/Edit post forms
+- Comment section
+- Responsive design
+
+Create in 'blog-app' folder with separate 'backend' and 'frontend' folders"
+```
+
+---
+
+## 💡 Best Practices
+
+### 1. Be Specific
+❌ Bad: "make a website"
+✅ Good: "Create a portfolio website with React, 3 sections (about, projects, contact), and responsive design"
+
+### 2. Provide Context
+❌ Bad: "fix the error"
+✅ Good: "Fix the 'undefined is not a function' error in line 45 of auth.service.ts when calling login()"
+
+### 3. Mention File Names
+```bash
+# Good
+abid "fix error in src/app/services/user.service.ts"
+
+# Better
+abid "fix TypeError at line 45 in src/app/services/user.service.ts"
+```
+
+### 4. Use Screenshots for Visual Issues
+```bash
+# Take screenshot of error/UI
+abid --paste "fix this error in app.component.ts"
+```
+
+### 5. Break Down Large Tasks
+Instead of:
+```bash
+abid "create a complete e-commerce platform"
+```
+
+Do this:
+```bash
+# Step 1
+abid "create product listing page with grid layout"
+
+# Step 2
+abid "add shopping cart functionality"
+
+# Step 3
+abid "add checkout page with form validation"
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Model Not Found
+```bash
+# Check available models
+ollama list
+
+# Pull model if needed
+ollama pull qwen3.5:9b
+```
+
+### Slow Response
+```bash
+# Use smaller model for faster responses
+abid --model qwen3.5:4b "your prompt"
+```
+
+### Vision Not Working
+```bash
+# Make sure you take screenshot first (Win + Shift + S)
+# Then immediately run:
+abid --paste "your question"
+
+# Or save image and use:
+abid --image "C:\path\to\image.png" "your question"
+```
+
+### Connection Error
+```bash
+# Check if Ollama is running
+ollama list
+
+# Restart Ollama if needed
+```
+
+### File Not Found
+```bash
+# Check current directory
+pwd
+
+# Navigate to project
+cd D:\MyProjects\my-app
+
+# Then use abid
+abid "fix error in app.ts"
+```
+
+---
+
+## 📝 Example Workflows
+
+### Workflow 1: Create & Deploy
+```bash
+# 1. Create project
+abid "create a React weather app with API integration"
+
+# 2. Test locally
+cd weather-app
+npm install
+npm start
+
+# 3. Fix any issues
+abid "fix the API key error in WeatherService.ts"
+
+# 4. Add features
+abid "add 5-day forecast feature"
+```
+
+### Workflow 2: Debug with Screenshot
+```bash
+# 1. Error appears
+# 2. Take screenshot (Win + Shift + S)
+# 3. Run:
+abid --paste "fix this error in auth.service.ts"
+
+# 4. Test fix
+npm start
+```
+
+### Workflow 3: Design to Code
+```bash
+# 1. Get UI design
+# 2. Take screenshot
+# 3. Run:
+abid --paste "create Angular component based on this design with HTML, CSS, and TypeScript"
+
+# 4. Review and refine
+abid "add animations and improve responsiveness"
+```
+
+---
+
+## 🎯 Common Commands
+
+### Quick Reference
+
+| Task | Command |
+|------|---------|
+| Test | `abid "hello"` |
+| Create project | `abid "create react app"` |
+| Fix bug | `abid "fix error in app.ts"` |
+| Add feature | `abid "add search functionality"` |
+| Screenshot | `abid --paste "fix this"` |
+| Interactive | `abid` |
+| Help | `abid --help` |
+
+---
+
+## 🎓 Tips & Tricks
+
+1. **Use Interactive Mode** for multi-step tasks
+2. **Take Screenshots** for visual errors and designs
+3. **Be Specific** about file names and line numbers
+4. **Provide Context** about your project and issue
+5. **Break Down** large tasks into smaller steps
+6. **Use Vision** for error messages, UI bugs, and designs
+7. **Wait Patiently** for vision analysis (30-60 seconds)
+
+---
+
+## 📊 Model Information
+
+### Current Model: qwen3.5:9b
+- Size: 6.6 GB
+- Vision: Enabled ✓
+- Best for: 16GB RAM systems
+- Speed: Moderate (30-60s for vision)
+- Quality: High
+
+### Alternative Models
+```bash
+# Faster (less accurate)
+abid --model qwen3.5:4b "your prompt"
+
+# Fastest (basic)
+abid --model qwen3.5:2b "your prompt"
+```
+
+---
 
 ## 🤝 Contributing
 
@@ -251,3 +609,5 @@ MIT
 ---
 
 Made with ❤️ by Abid
+
+**Ready to code? Start with:** `abid "hello"` 🚀

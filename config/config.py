@@ -18,13 +18,17 @@ class Provider(str, Enum):
 PROVIDER_CONFIG = {
     Provider.OLLAMA: {
         "base_url": "http://localhost:11434/v1",
-        "default_model": "qwen2.5-coder:7b",
-        "vision_model": "llava:7b",
+        "default_model": "qwen3.5:9b",
+        "vision_model": "qwen3.5:9b",
         "env_key": "OLLAMA_API_KEY",
         "default_key": "ollama",
         "models": [
-            {"name": "qwen2.5-coder:3b", "desc": "Fast & Good ⭐", "type": "coding"},
-            {"name": "qwen2.5-coder:7b", "desc": "Best Quality, Slower", "type": "coding"},
+            {"name": "qwen3.5:0.8b", "desc": "Fastest, Basic", "type": "coding"},
+            {"name": "qwen3.5:2b", "desc": "Fast & Light", "type": "coding"},
+            {"name": "qwen3.5:4b", "desc": "Good Balance", "type": "coding"},
+            {"name": "qwen3.5:9b", "desc": "Best for 16GB RAM ⭐ (Vision Support)", "type": "coding"},
+            {"name": "qwen3.5:27b", "desc": "High Quality", "type": "coding"},
+            {"name": "qwen3.5:35b", "desc": "Very Powerful", "type": "coding"},
         ],
     },
     Provider.GEMINI: {
@@ -87,8 +91,8 @@ PROVIDER_CONFIG = {
 
 
 class ModelConfig(BaseModel):
-    name: str = "qwen2.5-coder:7b"
-    vision_model: str = "llava:7b"
+    name: str = "qwen3.5:9b"
+    vision_model: str = "qwen3.5:9b"
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     context_window: int = 32_000
     provider: Provider = Provider.OLLAMA
