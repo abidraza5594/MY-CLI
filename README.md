@@ -133,6 +133,51 @@ abid "use the same pattern for products"
 
 ---
 
+## 📦 Installation (For New Users)
+
+### Prerequisites
+- **Python 3.10+** - [Download](https://python.org)
+- **Ollama** - [Download](https://ollama.ai)
+- **16GB RAM** (recommended)
+- **10GB free disk space**
+
+### Windows - Quick Install
+```bash
+# 1. Clone repository
+git clone https://github.com/abidraza5594/ABID-Agent.git
+cd ABID-Agent
+
+# 2. Run installer (does everything automatically)
+install.bat
+```
+
+### Manual Setup
+```bash
+# 1. Install Ollama from https://ollama.ai
+# 2. Clone repository
+# 3. Create virtual environment
+python -m venv venv
+.\venv\Scripts\activate
+
+# 4. Install dependencies
+pip install -r requirements.txt
+
+# 5. Download model
+ollama pull qwen3.5:9b
+
+# 6. Add to PowerShell profile
+function abid {
+    $env:API_KEY = "ollama"
+    $env:BASE_URL = "http://localhost:11434/v1"
+    & "C:\path\to\venv\Scripts\python.exe" "C:\path\to\main.py" $args
+}
+
+# 7. Test
+abid "hello"
+```
+
+---
+
 ## 🚀 Quick Start
 
 ### Test It

@@ -3,7 +3,8 @@ setlocal enabledelayedexpansion
 
 echo.
 echo  ╔═══════════════════════════════════════════╗
-echo  ║     ABID - AI Coding Assistant            ║
+echo  ║     ABID Agent - AI Coding Assistant      ║
+echo  ║     Developed by Abid Raza                ║
 echo  ║     Installation Script                   ║
 echo  ╚═══════════════════════════════════════════╝
 echo.
@@ -21,7 +22,7 @@ if %errorlevel% neq 0 (
     echo.
     echo  [ERROR] Python is not installed!
     echo.
-    echo  Please install Python from: https://python.org
+    echo  Please install Python 3.10+ from: https://python.org
     echo  Make sure to check "Add Python to PATH" during installation
     echo.
     pause
@@ -33,41 +34,18 @@ echo       [OK] Python found
 :: CHECK/INSTALL OLLAMA
 :: ============================================
 echo [2/6] Checking Ollama...
-ollama --version >nul 2>&1
+where ollama >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo       Ollama not found. Downloading Ollama...
+    echo       Ollama not found!
     echo.
-    
-    :: Download Ollama installer
-    powershell -Command "Invoke-WebRequest -Uri 'https://ollama.com/download/OllamaSetup.exe' -OutFile '%TEMP%\OllamaSetup.exe'"
-    
-    if exist "%TEMP%\OllamaSetup.exe" (
-        echo       Installing Ollama...
-        start /wait "" "%TEMP%\OllamaSetup.exe"
-        del "%TEMP%\OllamaSetup.exe"
-        
-        :: Wait for Ollama to be available
-        timeout /t 5 /nobreak >nul
-        
-        ollama --version >nul 2>&1
-        if %errorlevel% neq 0 (
-            echo.
-            echo  [ERROR] Ollama installation failed!
-            echo  Please install manually from: https://ollama.ai
-            echo.
-            pause
-            exit /b 1
-        )
-        echo       [OK] Ollama installed successfully
-    ) else (
-        echo.
-        echo  [ERROR] Failed to download Ollama!
-        echo  Please install manually from: https://ollama.ai
-        echo.
-        pause
-        exit /b 1
-    )
+    echo  Please install Ollama manually:
+    echo  1. Visit: https://ollama.ai
+    echo  2. Download and install Ollama
+    echo  3. Run this installer again
+    echo.
+    pause
+    exit /b 1
 ) else (
     echo       [OK] Ollama found
 )
@@ -76,11 +54,11 @@ if %errorlevel% neq 0 (
 :: START OLLAMA SERVICE
 :: ============================================
 echo [3/6] Starting Ollama service...
-:: Check if Ollama is running
 tasklist /FI "IMAGENAME eq ollama.exe" 2>NUL | find /I /N "ollama.exe">NUL
 if %errorlevel% neq 0 (
+    echo       Starting Ollama...
     start "" ollama serve
-    timeout /t 3 /nobreak >nul
+    timeout /t 5 /nobreak >nul
 )
 echo       [OK] Ollama service running
 
@@ -89,76 +67,85 @@ echo       [OK] Ollama service running
 :: ============================================
 echo [4/6] Setting up Python environment...
 if not exist "%INSTALL_DIR%\venv" (
+    echo       Creating virtual environment...
     python -m venv "%INSTALL_DIR%\venv"
 )
 echo       [OK] Virtual environment ready
 
 :: Install dependencies
 echo       Installing dependencies...
-call "%INSTALL_DIR%\venv\Scripts\pip" install -r "%INSTALL_DIR%\requirements.txt" -q
+call "%INSTALL_DIR%\venv\Scripts\pip" install -r "%INSTALL_DIR%\requirements.txt" --quiet --disable-pip-version-check
+if %errorlevel% neq 0 (
+    echo.
+    echo  [ERROR] Failed to install dependencies!
+    echo  Please check your internet connection and try again.
+    echo.
+    pause
+    exit /b 1
+)
 echo       [OK] Dependencies installed
 
 :: ============================================
 :: PULL AI MODELS
 :: ============================================
 echo [5/6] Downloading AI models...
-echo       This may take several minutes on first run...
+echo       This may take 10-15 minutes on first run...
 echo.
-echo       Pulling coding model (qwen2.5-coder:7b)...
-ollama pull qwen2.5-coder:7b
-echo       [OK] Coding model ready
+echo       Pulling Qwen3.5:9B model (6.6 GB)...
+echo       Best for 16GB RAM systems with vision support
 echo.
-echo       Pulling vision model (llava:7b)...
-ollama pull llava:7b
-echo       [OK] Vision model ready
+ollama pull qwen3.5:9b
+if %errorlevel% neq 0 (
+    echo.
+    echo  [ERROR] Failed to download model!
+    echo  Please check your internet connection.
+    echo.
+    pause
+    exit /b 1
+)
+echo       [OK] Model ready
 
 :: ============================================
 :: SETUP ABID COMMAND
 :: ============================================
 echo [6/6] Setting up 'abid' command...
 
-:: Create PowerShell script to add to profile
-set "PS_SCRIPT=%TEMP%\add_abid.ps1"
-
-echo $profileDir = Split-Path $PROFILE > "%PS_SCRIPT%"
-echo if (!(Test-Path $profileDir)) { New-Item -Path $profileDir -ItemType Directory -Force ^| Out-Null } >> "%PS_SCRIPT%"
-echo if (!(Test-Path $PROFILE)) { New-Item -Path $PROFILE -ItemType File -Force ^| Out-Null } >> "%PS_SCRIPT%"
-echo $content = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue >> "%PS_SCRIPT%"
-echo if ($content -notmatch 'function abid') { >> "%PS_SCRIPT%"
-echo     $abidFunc = @' >> "%PS_SCRIPT%"
-echo. >> "%PS_SCRIPT%"
-echo # ABID - AI Coding Assistant >> "%PS_SCRIPT%"
-echo function abid { >> "%PS_SCRIPT%"
-echo     $env:API_KEY = "ollama" >> "%PS_SCRIPT%"
-echo     $env:BASE_URL = "http://localhost:11434/v1" >> "%PS_SCRIPT%"
-echo     ^& "%INSTALL_DIR%\venv\Scripts\python.exe" "%INSTALL_DIR%\main.py" $args >> "%PS_SCRIPT%"
-echo } >> "%PS_SCRIPT%"
-echo '@ >> "%PS_SCRIPT%"
-echo     Add-Content -Path $PROFILE -Value $abidFunc >> "%PS_SCRIPT%"
-echo } >> "%PS_SCRIPT%"
-
-powershell -ExecutionPolicy Bypass -File "%PS_SCRIPT%" >nul 2>&1
-del "%PS_SCRIPT%" >nul 2>&1
+:: Create PowerShell profile function
+powershell -Command "$profileDir = Split-Path $PROFILE; if (!(Test-Path $profileDir)) { New-Item -Path $profileDir -ItemType Directory -Force | Out-Null }; if (!(Test-Path $PROFILE)) { New-Item -Path $PROFILE -ItemType File -Force | Out-Null }; $content = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue; if ($content -notmatch 'function abid') { $abidFunc = \"`n# ABID Agent - AI Coding Assistant`nfunction abid {`n    `$env:API_KEY = 'ollama'`n    `$env:BASE_URL = 'http://localhost:11434/v1'`n    & '%INSTALL_DIR%\venv\Scripts\python.exe' '%INSTALL_DIR%\main.py' `$args`n}`n\"; Add-Content -Path $PROFILE -Value $abidFunc }" >nul 2>&1
 
 echo       [OK] 'abid' command configured
 
 :: ============================================
-:: INSTALLATION COMPLETE - START ABID
+:: INSTALLATION COMPLETE
 :: ============================================
 echo.
 echo  ╔═══════════════════════════════════════════╗
 echo  ║     Installation Complete!                ║
 echo  ╚═══════════════════════════════════════════╝
 echo.
-echo  Starting ABID AI Assistant...
+echo  ABID Agent is now installed!
 echo.
 echo  ┌─────────────────────────────────────────────┐
-echo  │  TIP: After this session, open a NEW       │
-echo  │  terminal and type 'abid' anywhere!        │
+echo  │  Quick Start:                               │
+echo  │                                             │
+echo  │  1. Open a NEW terminal window              │
+echo  │  2. Type: abid                              │
+echo  │  3. Start coding!                           │
+echo  │                                             │
+echo  │  Examples:                                  │
+echo  │  - abid "hello"                             │
+echo  │  - abid "create angular todo app"           │
+echo  │  - abid --paste "fix this error"            │
+echo  │                                             │
+echo  │  For help: abid --help                      │
+echo  │  Read: README.md                            │
 echo  └─────────────────────────────────────────────┘
 echo.
-
-:: Set environment and start ABID
-set API_KEY=ollama
-set BASE_URL=http://localhost:11434/v1
-"%INSTALL_DIR%\venv\Scripts\python.exe" "%INSTALL_DIR%\main.py"
+echo  Model: qwen3.5:9b (6.6 GB)
+echo  Vision: Enabled
+echo  Multi-Agent: Enabled
+echo  Specialty: Angular Development
+echo.
+echo  Developed by Abid Raza
+echo.
+pause
