@@ -1,6 +1,8 @@
-# ABID - AI Coding Assistant 🤖
+# ABID Agent - AI Coding Assistant 🤖
 
-A powerful terminal-based AI coding assistant powered by **Qwen3.5:9b** with vision support.
+**Developed by Abid Raza**
+
+A powerful terminal-based AI coding assistant powered by **Qwen3.5:9b** with vision support and multi-agent architecture.
 
 ```
      _    ____ ___ ____  
@@ -10,12 +12,110 @@ A powerful terminal-based AI coding assistant powered by **Qwen3.5:9b** with vis
  /_/   \_\____/___|____/ 
                          
  Your AI Coding Partner
+ Developed by Abid Raza
 ```
 
 ## ✅ Setup Complete!
-- Model: **qwen3.5:9b** (6.6 GB) ✓
-- Vision Support: **Enabled** 👁️
-- Status: Ready to use!
+- **Agent**: ABID Agent by Abid Raza
+- **Model**: qwen3.5:9b (6.6 GB) ✓
+- **Vision Support**: Enabled 👁️
+- **Multi-Agent System**: Enabled 🤖
+- **Specialty**: Angular Development & Full-Stack
+- **Status**: Ready to use!
+
+---
+
+## 🎯 Specialty: Angular Development
+
+ABID Agent is **SPECIALIZED** in Angular development:
+
+- ✅ Angular 14+ (Standalone Components)
+- ✅ TypeScript Strict Mode
+- ✅ RxJS & Observables
+- ✅ Angular Material
+- ✅ NgRx State Management
+- ✅ Reactive Forms
+- ✅ Route Guards & Interceptors
+- ✅ Angular Best Practices
+
+### Angular Examples
+
+**Create Component:**
+```bash
+abid "create user profile component with form validation"
+```
+
+**Add Service:**
+```bash
+abid "add authentication service with JWT"
+```
+
+**Implement Feature:**
+```bash
+abid "add dark mode with Angular Material theming"
+```
+
+**Fix Angular Bug:**
+```bash
+abid "fix the subscription memory leak in dashboard component"
+```
+
+---
+
+## 🤖 Advanced Multi-Agent System
+
+ABID Agent operates as an **AUTONOMOUS MULTI-AGENT SYSTEM** with 5 specialized agents:
+
+1. **EXPLORER** - Discovers project structure and files
+2. **ANALYZER** - Understands code and patterns (Angular expert)
+3. **PLANNER** - Creates execution strategies
+4. **EXECUTOR** - Makes precise changes (Angular best practices)
+5. **VALIDATOR** - Reviews and verifies
+
+### Zero-Context Operation
+
+The system can work with MINIMAL context:
+
+```bash
+# Just say what you want - no need to specify files!
+abid "add dark mode"
+
+# System will automatically:
+# 1. Explore project structure
+# 2. Find all relevant files
+# 3. Understand current implementation
+# 4. Make ALL necessary changes
+```
+
+### Intelligent Discovery
+
+```bash
+# You don't need to tell it where things are
+abid "fix the authentication bug"
+
+# System automatically:
+# - Searches for auth-related files
+# - Reads and understands the code
+# - Identifies the bug
+# - Fixes it completely
+```
+
+### Conversation Memory
+
+ABID Agent remembers your conversations:
+
+```bash
+# First request
+abid "add user service with CRUD operations"
+
+# Later...
+abid "change it back to the old way"
+# Agent remembers and reverts!
+
+# Or...
+abid "use the same pattern for products"
+# Agent recalls the pattern and applies it!
+```
 
 ---
 
@@ -598,6 +698,28 @@ abid --model qwen3.5:2b "your prompt"
 
 ---
 
+## 🎓 About ABID Agent
+
+**ABID Agent** is an advanced AI coding assistant developed by **Abid Raza**, specialized in Angular development and full-stack solutions.
+
+### Key Features:
+- 🤖 Multi-agent autonomous system
+- 👁️ Vision support for screenshots
+- 🎯 Angular development specialist
+- 🧠 Conversation memory
+- ⚡ Zero-context operation
+- 🔍 Intelligent code discovery
+
+### Developer:
+**Abid Raza** - Angular & Full-Stack Developer
+
+### Technology:
+- Model: Qwen3.5:9b (6.6 GB)
+- Architecture: Multi-agent system
+- Specialty: Angular, TypeScript, RxJS
+
+---
+
 ## 🤝 Contributing
 
 Pull requests welcome!
@@ -608,6 +730,11 @@ MIT
 
 ---
 
-Made with ❤️ by Abid
+**Made with ❤️ by Abid Raza**
 
 **Ready to code? Start with:** `abid "hello"` 🚀
+
+---
+
+**ABID Agent** - Your AI Coding Partner
+Developed by Abid Raza | Specialized in Angular Development
