@@ -12,6 +12,7 @@ from agent.session import Session
 from config.config import ApprovalPolicy, Config, Provider, PROVIDER_CONFIG
 from config.loader import load_config
 from ui.tui import TUI, get_console
+from utils.file_mentions import extract_mentions, format_mention_context
 
 console = get_console()
 
@@ -119,9 +120,24 @@ class CLI:
             return None
         return tool.kind.value
 
+    def _resolve_mentions(self, message: str) -> str:
+        """Process @ file mentions in user message."""
+        mentions = extract_mentions(message)
+        if not mentions:
+            return message
+        
+        # Show user what files were found
+        enhanced = format_mention_context(message, self.config.cwd)
+        if enhanced != message:
+            console.print(f"[dim]📎 Resolved {len(mentions)} @mention(s)[/dim]")
+        return enhanced
+
     async def _process_message(self, message: str) -> str | None:
         if not self.agent:
             return None
+
+        # Resolve @ file mentions before sending to agent
+        message = self._resolve_mentions(message)
 
         assistant_streaming = False
         final_response: str | None = None

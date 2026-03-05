@@ -141,7 +141,7 @@ class ApprovalPolicy(str, Enum):
     ON_REQUEST = "on-request"
     ON_FAILURE = "on-failure"
     AUTO = "auto"
-    AUTO_EDIT = "auto-edut"
+    AUTO_EDIT = "auto-edit"
     NEVER = "never"
     YOLO = "yolo"
 
@@ -177,7 +177,7 @@ class Config(BaseModel):
     )
     hooks_enabled: bool = False
     hooks: list[HookConfig] = Field(default_factory=list)
-    approval: ApprovalPolicy = ApprovalPolicy.ON_REQUEST
+    approval: ApprovalPolicy = ApprovalPolicy.AUTO
     max_turns: int = 200
     mcp_servers: dict[str, MCPServerConfig] = Field(default_factory=dict)
 

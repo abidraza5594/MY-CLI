@@ -56,13 +56,33 @@ DANGEROUS_PATTERNS = [
 # Patterns for safe commands (can be auto-approved)
 SAFE_PATTERNS = [
     # Information commands
-    r"^(ls|dir|pwd|cd|echo|cat|head|tail|less|more|wc)(\s|$)",
-    r"^(find|locate|which|whereis|file|stat)(\s|$)",
+    r"^(ls|dir|pwd|cd|echo|cat|head|tail|less|more|wc|type)(\s|$)",
+    r"^(find|locate|which|whereis|file|stat|tree)(\s|$)",
     # Development tools (read-only)
-    r"^git\s+(status|log|diff|show|branch|remote|tag)(\s|$)",
-    r"^(npm|yarn|pnpm)\s+(list|ls|outdated)(\s|$)",
-    r"^pip\s+(list|show|freeze)(\s|$)",
-    r"^cargo\s+(tree|search)(\s|$)",
+    r"^git\s+(status|log|diff|show|branch|remote|tag|stash\s+list)(\s|$)",
+    r"^(npm|yarn|pnpm)\s+(list|ls|outdated|info|view|search)(\s|$)",
+    r"^pip\s+(list|show|freeze|check)(\s|$)",
+    r"^cargo\s+(tree|search|check)(\s|$)",
+    # Development tools (build/run/test - commonly needed autonomously)
+    r"^(npm|yarn|pnpm)\s+(install|run|test|build|start|dev|lint|format)(\s|$)",
+    r"^pip\s+install(\s|$)",
+    r"^python\s+",
+    r"^node\s+",
+    r"^npx\s+",
+    r"^ng\s+",  # Angular CLI
+    r"^cargo\s+(build|run|test|clippy|fmt)(\s|$)",
+    r"^go\s+(build|run|test|vet|fmt)(\s|$)",
+    r"^dotnet\s+(build|run|test)(\s|$)",
+    r"^mvn\s+",
+    r"^gradle\s+",
+    r"^make(\s|$)",
+    r"^cmake(\s|$)",
+    # Git operations (common dev workflow)
+    r"^git\s+(add|commit|checkout|switch|pull|fetch|merge|rebase|reset|clean)(\s|$)",
+    # Package managers
+    r"^(pip|pip3)\s+(install|uninstall)(\s|$)",
+    r"^(npm|yarn|pnpm)\s+(add|remove|uninstall)(\s|$)",
+    r"^composer\s+(require|install|update)(\s|$)",
     # Text processing (usually safe)
     r"^(grep|awk|sed|cut|sort|uniq|tr|diff|comm)(\s|$)",
     # System info
@@ -70,6 +90,15 @@ SAFE_PATTERNS = [
     r"^(env|printenv|set)$",
     # Process info
     r"^(ps|top|htop|pgrep)(\s|$)",
+    # File operations (within project)
+    r"^(mkdir|touch|cp|copy|move|mv|rename)(\s|$)",
+    # Docker (common dev tool)
+    r"^docker\s+(ps|images|logs|inspect|exec|build|run|compose)(\s|$)",
+    r"^docker-compose\s+",
+    # Linting and formatting
+    r"^(eslint|prettier|black|isort|flake8|mypy|pylint|rubocop)(\s|$)",
+    # Testing frameworks
+    r"^(pytest|jest|mocha|vitest|playwright|cypress)(\s|$)",
 ]
 
 
